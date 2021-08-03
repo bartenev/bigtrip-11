@@ -1,16 +1,16 @@
 import {generateEvents, destinations, additionalOffers} from "./mock/waypoint.js";
 
-import {createInfoTemplate} from './components/info.js';
-import {createInfoMainTemplate} from './components/info-main.js';
-import {createInfoCostTemplate} from './components/info-cost.js';
-import {createTabsTemplate} from './components/tabs.js';
-import {createFiltersTemplate} from './components/filters.js';
-import {createSortTemplate} from './components/sort.js';
-import {createEventEditTemplate} from './components/event-edit.js';
-import {createDaysListTemplate} from './components/days-list.js';
-import {createDayTemplate} from './components/day.js';
-import {createEventsListTemplate} from './components/events-list.js';
-import {createEventTemplate} from './components/event.js';
+import InfoComponent from './components/info.js';
+import InfoMainComponent from './components/info-main.js';
+import InfoCostComponent from './components/info-cost.js';
+import TabsComponent from './components/tabs.js';
+import FiltersComponent from './components/filters.js';
+import SortComponent from './components/sort.js';
+import EventEditComponent from './components/event-edit.js';
+import DaysListComponent from './components/days-list.js';
+import DayComponent from './components/day.js';
+import EventsListComponent from './components/events-list.js';
+import EventComponent from './components/event.js';
 import {render} from "./utils.js";
 
 
