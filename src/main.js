@@ -11,13 +11,10 @@ import {createDaysListTemplate} from './components/days-list.js';
 import {createDayTemplate} from './components/day.js';
 import {createEventsListTemplate} from './components/events-list.js';
 import {createEventTemplate} from './components/event.js';
+import {render} from "./utils.js";
 
 
 const EVENTS_COUNT = 20;
-
-const render = (container, template, place = `beforeend`) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 const compare = (firstEvent, secondEvent) => {
   if (firstEvent.startTime > secondEvent.startTime) {
