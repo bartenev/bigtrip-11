@@ -1,5 +1,5 @@
 import {WAYPOINT_TYPES} from "../const.js";
-import {formatTimeEditEvent} from "../utils.js";
+import {formatTimeEditEvent, createElement} from "../utils.js";
 
 const createEventTypeMarkup = (types, kindOfEventType, currentType) => {
   return types.filter((type) => type.type === kindOfEventType).map((type, index) => {
@@ -47,7 +47,7 @@ const createPhotosMarkup = (photos) => {
   }).join(`\n`);
 };
 
-export const createEventEditTemplate = (event, cities) => {
+const createEventEditTemplate = (event, cities) => {
 
   const {type, destination, description, photos, price, startTime, finishTime, offers} = event;
 
@@ -137,3 +137,27 @@ export const createEventEditTemplate = (event, cities) => {
     </form>`
   );
 };
+
+export default class EventEdit {
+  constructor(event, cities) {
+    this._event = event;
+    this._cities = cities;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._event, this._cities);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

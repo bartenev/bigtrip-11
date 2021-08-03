@@ -1,4 +1,4 @@
-import {castTimeFormat, formatTimeEvent, formatTimeDateTime} from "../utils.js";
+import {castTimeFormat, formatTimeEvent, formatTimeDateTime, createElement} from "../utils.js";
 
 const MILLISECONDS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -55,7 +55,7 @@ const calculatingDurationEvent = (startTime, finishTime) => {
   return durationEvent;
 };
 
-export const createEventTemplate = (event) => {
+const createEventTemplate = (event) => {
   const {type, destination, price, startTime, finishTime, offers} = event;
   return (
     `<li class="trip-events__item">
@@ -87,3 +87,26 @@ export const createEventTemplate = (event) => {
     </li>`
   );
 };
+
+export default class Event {
+  constructor(event) {
+    this._event = event;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

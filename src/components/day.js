@@ -1,6 +1,6 @@
-import {formatTimeDateTime, formatTimeMD} from "../utils.js";
+import {formatTimeDateTime, formatTimeMD, createElement} from "../utils.js";
 
-export const createDayTemplate = (date, index) => {
+const createDayTemplate = (date, index) => {
   return (
     `<li class="trip-days__item  day">
       <div class="day__info">
@@ -10,3 +10,27 @@ export const createDayTemplate = (date, index) => {
     </li>`
   );
 };
+
+export default class Day {
+  constructor(date, index) {
+    this._date = date;
+    this._index = index;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createDayTemplate(this._date, this._index);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
