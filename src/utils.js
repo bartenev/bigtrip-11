@@ -50,4 +50,11 @@ const formatMMM = (value) => {
   return `${month}`;
 };
 
-export {castTimeFormat, formatTimeEditEvent, formatTimeEvent, formatTimeDateTime, formatTimeMD, formatMMM};
+const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
+export {castTimeFormat, formatTimeEditEvent, formatTimeEvent, formatTimeDateTime, formatTimeMD, formatMMM, createElement};
