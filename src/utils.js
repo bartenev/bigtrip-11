@@ -73,4 +73,4 @@ const render = (container, element, place = RenderPosition.BEFOREEND) => {
   }
 };
 
-export {castTimeFormat, formatTimeEditEvent, formatTimeEvent, formatTimeDateTime, formatTimeMD, formatMMM, createElement, render};
+export {castTimeFormat, formatTimeEditEvent, formatTimeEvent, formatTimeDateTime, formatTimeMD, formatMMM, createElement, render, RenderPosition};

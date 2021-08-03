@@ -1,4 +1,4 @@
-import {generateEvents, destinations, additionalOffers} from "./mock/waypoint.js";
+import {generateEvents, destinations} from "./mock/waypoint.js";
 
 import InfoComponent from './components/info.js';
 import InfoMainComponent from './components/info-main.js';
@@ -11,7 +11,7 @@ import DaysListComponent from './components/days-list.js';
 import DayComponent from './components/day.js';
 import EventsListComponent from './components/events-list.js';
 import EventComponent from './components/event.js';
-import {render} from "./utils.js";
+import {render, RenderPosition} from "./utils.js";
 
 
 const EVENTS_COUNT = 20;
@@ -51,25 +51,25 @@ console.log(events.map((event) => {
 
 const tripMainElement = document.querySelector(`.trip-main`);
 
-render(tripMainElement, createInfoTemplate(), `afterbegin`);
+render(tripMainElement, new InfoComponent().getElement(), RenderPosition.AFTERBEGIN);
 
 const tripInfoElement = document.querySelector(`.trip-info`);
 
-render(tripInfoElement, createInfoMainTemplate(events));
-render(tripInfoElement, createInfoCostTemplate(events));
+render(tripInfoElement, new InfoMainComponent(events).getElement());
+render(tripInfoElement, new InfoCostComponent(events).getElement());
 
 const tripControlsElement = document.querySelector(`.trip-controls`);
 const tripControlsMenuTitleElement = document.querySelector(`.trip-controls h2`);
 
-render(tripControlsMenuTitleElement, createTabsTemplate(), `afterend`);
-render(tripControlsElement, createFiltersTemplate());
+render(tripControlsMenuTitleElement, new TabsComponent().getElement(), RenderPosition.AFTERBEGIN);
+render(tripControlsElement, new FiltersComponent().getElement());
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 
-render(tripEventsElement, createSortTemplate());
-render(tripEventsElement, createEventEditTemplate(events[0], destinations, additionalOffers));
+render(tripEventsElement, new SortComponent().getElement());
+render(tripEventsElement, new EventEditComponent(events[0], destinations).getElement());
 
-render(tripEventsElement, createDaysListTemplate());
+render(tripEventsElement, new DaysListComponent().getElement());
 
 const tripDaysListElement = document.querySelector(`.trip-days`);
 
@@ -80,16 +80,16 @@ const uniqueDays = getUniqueDays(eventsDuplicate);
 // ----==
 
 console.log(uniqueDays.map((day) => {
-    return day;
-  })
+  return day;
+})
 );
 
 // ====
 
 for (const [index, uniqueDay] of uniqueDays.entries()) {
-  render(tripDaysListElement, createDayTemplate(uniqueDay, index + 1));
+  render(tripDaysListElement, new DayComponent(uniqueDay, index + 1).getElement());
   const tripDayElements = document.querySelectorAll(`.day`);
-  render(tripDayElements[tripDayElements.length - 1], createEventsListTemplate());
+  render(tripDayElements[tripDayElements.length - 1], new EventsListComponent().getElement());
 
   const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
 
@@ -98,7 +98,7 @@ for (const [index, uniqueDay] of uniqueDays.entries()) {
   let remainingEvents = eventsDuplicate.splice(lastElementIndex);
 
   eventsDuplicate.forEach((event) => {
-    render(tripEventsListElements[tripEventsListElements.length - 1], createEventTemplate(event));
+    render(tripEventsListElements[tripEventsListElements.length - 1], new EventComponent(event).getElement());
   });
 
   eventsDuplicate = remainingEvents;
