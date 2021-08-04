@@ -1,11 +1,14 @@
 import {formatTimeDateTime, formatTimeMD, createElement} from "../utils.js";
 
 const createDayTemplate = (date, index) => {
+  const formattedDate = formatTimeMD(date);
+  const formattedDateTime = formatTimeDateTime(date, true);
+
   return (
     `<li class="trip-days__item  day">
       <div class="day__info">
         <span class="day__counter">${index}</span>
-        <time class="day__date" datetime="${formatTimeDateTime(date, true)}">${formatTimeMD(date)}</time>
+        <time class="day__date" datetime="${formattedDateTime}">${formattedDate}</time>
       </div>
     </li>`
   );

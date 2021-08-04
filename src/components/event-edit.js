@@ -4,9 +4,10 @@ import {formatTimeEditEvent, createElement} from "../utils.js";
 const createEventTypeMarkup = (types, kindOfEventType, currentType) => {
   return types.filter((type) => type.type === kindOfEventType).map((type, index) => {
     const {name, title} = type;
+    const isChecked = currentType === type ? `checked` : ``;
     return (
       `<div class="event__type-item">
-        <input id="event-type-${name}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${name}" ${currentType === type ? `checked` : ``}>
+        <input id="event-type-${name}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${name}" ${isChecked}>
         <label class="event__type-label  event__type-label--${name}" for="event-type-${name}-${index}">${title}</label>
       </div>`
     );
@@ -25,9 +26,10 @@ const createDestinationMarkup = (cities) => {
 const createOffersMarkup = (offers) => {
   return offers.map((offer, index) => {
     const {type, name, price, isChecked} = offer;
+    const checkedInfo = isChecked ? `checked` : ``;
     return (
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${index}" type="checkbox" name="event-offer-${type}" ${isChecked ? `checked` : ``}>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${index}" type="checkbox" name="event-offer-${type}" ${checkedInfo}>
         <label class="event__offer-label" for="event-offer-${type}-${index}">
           <span class="event__offer-title">${name}</span>
           &plus;
@@ -36,6 +38,18 @@ const createOffersMarkup = (offers) => {
       </div>`
     );
   }).join(`\n`);
+};
+
+const createOffersTemplate = (offers) => {
+  const offersMarkup = createOffersMarkup(offers);
+  return (
+    `<section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${offersMarkup}
+      </div>
+    </section>`
+  );
 };
 
 const createPhotosMarkup = (photos) => {
@@ -49,13 +63,17 @@ const createPhotosMarkup = (photos) => {
 
 const createEventEditTemplate = (event, cities) => {
 
-  const {type, destination, description, photos, price, startTime, finishTime, offers} = event;
+  const {type, destination, description, photos, price, startTime, finishTime, offers, isFavorite} = event;
 
+  const typeEvent = `${type.title} ${type.type === `transport` ? `to` : `in`}`;
   const transportEventTypeMarkup = createEventTypeMarkup(WAYPOINT_TYPES, `transport`, type);
   const placeEventTypeMarkup = createEventTypeMarkup(WAYPOINT_TYPES, `place`, type);
+  const startTimeDate = formatTimeEditEvent(startTime);
+  const finishTimeDate = formatTimeEditEvent(finishTime);
   const destinationMarkup = createDestinationMarkup(cities);
-  const offersMarkup = createOffersMarkup(offers);
+  const offersMarkup = offers.length ? createOffersTemplate(offers) : ``;
   const photosMarkup = createPhotosMarkup(photos);
+  const favorite = isFavorite ? `checked` : ``;
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -82,7 +100,7 @@ const createEventEditTemplate = (event, cities) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${type.title} ${type.type === `transport` ? `to` : `in`}
+            ${typeEvent}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
@@ -95,12 +113,12 @@ const createEventEditTemplate = (event, cities) => {
             From
           </label>
           <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"
-          value="${formatTimeEditEvent(startTime)}">
+          value="${startTimeDate}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatTimeEditEvent(finishTime)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${finishTimeDate}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -112,24 +130,31 @@ const createEventEditTemplate = (event, cities) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__reset-btn" type="reset">Delete</button>
+        <!-- <button class="event__reset-btn" type="reset">Cancel</button> -->
+
+        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${favorite}>
+        <label class="event__favorite-btn" for="event-favorite-1">
+          <span class="visually-hidden">Add to favorite</span>
+          <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+            <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+          </svg>
+        </label>
+
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
+
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${offersMarkup}
-          </div>
-        </section>
-
+        ${offersMarkup}
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${description}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              ${photosMarkup};
+              ${photosMarkup}
             </div>
           </div>
         </section>
