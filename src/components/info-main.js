@@ -1,7 +1,8 @@
-import {castTimeFormat, formatMMM} from "../utils.js";
+import {castTimeFormat, formatMMM, createElement} from "../utils.js";
 
 const getDates = (events) => {
   let dates = ``;
+
   const firstEvent = events[0].startTime;
   const lastEvent = events[events.length - 1].startTime;
 
@@ -41,9 +42,9 @@ const getDirections = (events) => {
   return route;
 };
 
-export const createInfoMainTemplate = (events) => {
-  const directions = getDirections(events);
-  const dates = getDates(events);
+const createInfoMainTemplate = (events) => {
+  const directions = events.length ? getDirections(events) : ``;
+  const dates = events.length ? getDates(events) : ``;
   return (
     `<div class="trip-info__main">
       <h1 class="trip-info__title">${directions}</h1>
@@ -52,3 +53,26 @@ export const createInfoMainTemplate = (events) => {
     </div>`
   );
 };
+
+export default class InfoMain {
+  constructor(events) {
+    this._events = events;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createInfoMainTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

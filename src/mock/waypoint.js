@@ -127,6 +127,7 @@ const generateEvent = () => {
     startTime,
     finishTime,
     offers: getRandomOffers(getRandomIntegerNumber(0, 5)),
+    isFavorite: trueOrFalse(),
   };
 };
 
