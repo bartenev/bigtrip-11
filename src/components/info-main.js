@@ -1,4 +1,5 @@
-import {castTimeFormat, formatMMM, createElement} from "../utils.js";
+import {castTimeFormat, formatMMM} from "../utils/common.js";
+import AbstractComponent from "./abstract-component.js";
 
 const getDates = (events) => {
   let dates = ``;
@@ -54,25 +55,14 @@ const createInfoMainTemplate = (events) => {
   );
 };
 
-export default class InfoMain {
+export default class InfoMain extends AbstractComponent {
   constructor(events) {
+    super();
+
     this._events = events;
-    this._element = null;
   }
 
   getTemplate() {
     return createInfoMainTemplate(this._events);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
