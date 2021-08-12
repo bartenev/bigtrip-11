@@ -40,14 +40,13 @@ const renderEvent = (eventListElement, event) => {
   };
 
   const eventComponent = new EventComponent(event);
-  const editButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
-  editButton.addEventListener(`click`, () => {
+  eventComponent.setEditButtonClickHandler(() => {
     replace(eventEditComponent, eventComponent);
     document.addEventListener(`keydown`, onEscKeyDown);
   });
 
   const eventEditComponent = new EventEditComponent(event, destinations);
-  eventEditComponent.getElement().addEventListener(`submit`, (evt) => {
+  eventEditComponent.setSubmitHandler((evt) => {
     evt.preventDefault();
     replace(eventComponent, eventEditComponent);
     document.removeEventListener(`keydown`, onEscKeyDown);
