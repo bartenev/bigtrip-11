@@ -1,4 +1,5 @@
-import {castTimeFormat, formatTimeEvent, formatTimeDateTime, createElement} from "../utils.js";
+import {castTimeFormat, formatTimeEvent, formatTimeDateTime} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
 
 const MILLISECONDS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -94,25 +95,14 @@ const createEventTemplate = (event) => {
   );
 };
 
-export default class Event {
+export default class Event extends AbstractComponent {
   constructor(event) {
+    super();
+
     this._event = event;
-    this._element = null;
   }
 
   getTemplate() {
     return createEventTemplate(this._event);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

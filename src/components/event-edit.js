@@ -1,5 +1,6 @@
 import {WAYPOINT_TYPES} from "../const.js";
-import {formatTimeEditEvent, createElement} from "../utils.js";
+import {formatTimeEditEvent} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createEventTypeMarkup = (types, kindOfEventType, currentType) => {
   return types.filter((type) => type.type === kindOfEventType).map((type, index) => {
@@ -163,26 +164,15 @@ const createEventEditTemplate = (event, cities) => {
   );
 };
 
-export default class EventEdit {
+export default class EventEdit extends AbstractComponent {
   constructor(event, cities) {
+    super();
+
     this._event = event;
     this._cities = cities;
-    this._element = null;
   }
 
   getTemplate() {
     return createEventEditTemplate(this._event, this._cities);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
