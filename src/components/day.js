@@ -1,4 +1,4 @@
-import {formatTimeDateTime, formatTimeMD} from "../utils.js";
+import {formatTimeDateTime, formatTimeMD} from "../utils/common.js";
 import AbstractComponent from "./abstract-component.js";
 
 const createDayTemplate = (date, index) => {

@@ -1,4 +1,4 @@
-import {castTimeFormat, formatTimeEvent, formatTimeDateTime} from "../utils.js";
+import {castTimeFormat, formatTimeEvent, formatTimeDateTime} from "../utils/common.js";
 import AbstractComponent from "./abstract-component.js";
 
 const MILLISECONDS_PER_SECOND = 1000;

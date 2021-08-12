@@ -1,4 +1,4 @@
-import {castTimeFormat, formatMMM} from "../utils.js";
+import {castTimeFormat, formatMMM} from "../utils/common.js";
 import AbstractComponent from "./abstract-component.js";
 
 const getDates = (events) => {

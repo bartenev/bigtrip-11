@@ -12,7 +12,7 @@ import DaysListComponent from './components/days-list.js';
 import DayComponent from './components/day.js';
 import EventsListComponent from './components/events-list.js';
 import EventComponent from './components/event.js';
-import {render, RenderPosition} from "./utils.js";
+import {render, replace, RenderPosition} from "./utils/render";
 
 const EVENTS_COUNT = 20;
 
@@ -30,19 +30,11 @@ const getUniqueDays = (listOfEvent) => {
 };
 
 const renderEvent = (eventListElement, event) => {
-  const replaceEventToEdit = () => {
-    eventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
-  };
-
-  const replaceEditToEvent = () => {
-    eventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
-  };
-
   const onEscKeyDown = (evt) => {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
-      replaceEditToEvent();
+      replace(eventComponent, eventEditComponent);
       document.removeEventListener(`keydown`, onEscKeyDown);
     }
   };
@@ -50,28 +42,28 @@ const renderEvent = (eventListElement, event) => {
   const eventComponent = new EventComponent(event);
   const editButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
   editButton.addEventListener(`click`, () => {
-    replaceEventToEdit();
+    replace(eventEditComponent, eventComponent);
     document.addEventListener(`keydown`, onEscKeyDown);
   });
 
   const eventEditComponent = new EventEditComponent(event, destinations);
   eventEditComponent.getElement().addEventListener(`submit`, (evt) => {
     evt.preventDefault();
-    replaceEditToEvent();
+    replace(eventComponent, eventEditComponent);
     document.removeEventListener(`keydown`, onEscKeyDown);
   });
 
-  render(eventListElement, eventComponent.getElement());
+  render(eventListElement, eventComponent);
 };
 
 const renderTripEventsComponent = (tripEventsComponent, events) => {
   if (!events.length) {
-    render(tripEventsComponent, new NoPointsComponent().getElement());
+    render(tripEventsComponent, new NoPointsComponent());
     return;
   }
 
-  render(tripEventsComponent, new SortComponent().getElement());
-  render(tripEventsComponent, new DaysListComponent().getElement());
+  render(tripEventsComponent, new SortComponent());
+  render(tripEventsComponent, new DaysListComponent());
 
   const tripDaysListElement = document.querySelector(`.trip-days`);
 
@@ -79,9 +71,9 @@ const renderTripEventsComponent = (tripEventsComponent, events) => {
   const uniqueDays = getUniqueDays(eventsDuplicate);
 
   for (const [index, uniqueDay] of uniqueDays.entries()) {
-    render(tripDaysListElement, new DayComponent(uniqueDay, index + 1).getElement());
+    render(tripDaysListElement, new DayComponent(uniqueDay, index + 1));
     const tripDayElements = document.querySelectorAll(`.day`);
-    render(tripDayElements[tripDayElements.length - 1], new EventsListComponent().getElement());
+    render(tripDayElements[tripDayElements.length - 1], new EventsListComponent());
 
     const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
 
@@ -118,13 +110,13 @@ console.log(events.map((event) => {
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoElement = new InfoComponent();
-render(tripMainElement, tripInfoElement.getElement(), RenderPosition.AFTERBEGIN);
-render(tripInfoElement.getElement(), new InfoMainComponent(events).getElement());
-render(tripInfoElement.getElement(), new InfoCostComponent(events).getElement());
+render(tripMainElement, tripInfoElement, RenderPosition.AFTERBEGIN);
+render(tripInfoElement.getElement(), new InfoMainComponent(events));
+render(tripInfoElement.getElement(), new InfoCostComponent(events));
 
 const tripControlsElement = document.querySelector(`.trip-controls`);
-render(tripControlsElement, new TabsComponent().getElement(), RenderPosition.AFTERBEGIN);
-render(tripControlsElement, new FiltersComponent().getElement());
+render(tripControlsElement, new TabsComponent(), RenderPosition.AFTERBEGIN);
+render(tripControlsElement, new FiltersComponent());
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 renderTripEventsComponent(tripEventsElement, events);

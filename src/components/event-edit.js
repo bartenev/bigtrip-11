@@ -1,5 +1,5 @@
 import {WAYPOINT_TYPES} from "../const.js";
-import {formatTimeEditEvent} from "../utils.js";
+import {formatTimeEditEvent} from "../utils/common.js";
 import AbstractComponent from "./abstract-component.js";
 
 const createEventTypeMarkup = (types, kindOfEventType, currentType) => {
