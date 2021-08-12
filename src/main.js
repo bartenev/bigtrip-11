@@ -6,19 +6,10 @@ import TabsComponent from './components/tabs.js';
 import FiltersComponent from './components/filters.js';
 import {render, RenderPosition} from "./utils/render";
 import TripController from "./controllers/trip";
+
 const EVENTS_COUNT = 20;
 
-const compare = (firstEvent, secondEvent) => {
-  if (firstEvent.startTime > secondEvent.startTime) {
-    return 1;
-  } else if (firstEvent.startTime < secondEvent.startTime) {
-    return -1;
-  } else {
-    return 0;
-  }
-};
-
-const events = generateEvents(EVENTS_COUNT).sort(compare);
+const events = generateEvents(EVENTS_COUNT).sort((firstEvent, secondEvent) => (firstEvent.startTime - secondEvent.startTime));
 
 // ---------
 console.log(events.map((event) => {

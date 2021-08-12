@@ -1,15 +1,23 @@
 import {formatTimeDateTime, formatTimeMD} from "../utils/common.js";
 import AbstractComponent from "./abstract-component.js";
 
-const createDayTemplate = (date, index) => {
+const getDayInfo = (date, index) => {
   const formattedDate = formatTimeMD(date);
   const formattedDateTime = formatTimeDateTime(date, true);
 
   return (
+    `<span class="day__counter">${index}</span>
+    <time class="day__date" datetime="${formattedDateTime}">${formattedDate}</time>`
+  );
+};
+
+const createDayTemplate = (date, index) => {
+  const dayInfo = date && index ? getDayInfo(date, index) : ``;
+
+  return (
     `<li class="trip-days__item  day">
       <div class="day__info">
-        <span class="day__counter">${index}</span>
-        <time class="day__date" datetime="${formattedDateTime}">${formattedDate}</time>
+        ${dayInfo}
       </div>
     </li>`
   );
