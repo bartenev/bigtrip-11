@@ -4,8 +4,9 @@ import EventEditComponent from "../components/event-edit.js";
 import {destinations} from "../mock/waypoint.js";
 
 export default class EventController {
-  constructor(container) {
+  constructor(container, onDataChange) {
     this._container = container;
+    this._onDataChange = onDataChange;
     this._eventComponent = null;
     this._eventEditComponent = null;
 
@@ -24,6 +25,12 @@ export default class EventController {
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
       this._replaceEditToEvent();
+    });
+
+    this._eventEditComponent.setFavoriteButtonClickHandler(() => {
+      this._onDataChange(event, Object.assign({}, event, {
+        isFavorite: !event.isFavorite,
+      }));
     });
 
     render(this._container, this._eventComponent);
