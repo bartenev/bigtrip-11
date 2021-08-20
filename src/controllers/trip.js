@@ -1,13 +1,11 @@
-import {render, replace} from "../utils/render.js";
-import EventComponent from "../components/event.js";
-import EventEditComponent from "../components/event-edit.js";
-import {destinations} from "../mock/waypoint.js";
+import {render} from "../utils/render.js";
 import NoPointsComponent from "../components/no-points.js";
 import SortComponent from "../components/sort.js";
 import DaysListComponent from "../components/days-list.js";
 import DayComponent from "../components/day.js";
 import EventsListComponent from "../components/events-list.js";
 import {SortType} from "../components/sort.js";
+import EventController from "./event.js";
 
 const getUniqueDays = (listOfEvent) => {
   let days = [];
@@ -41,36 +39,12 @@ const getSortedEvents = (events, sortType) => {
   return sortedEvents;
 };
 
-const renderEvent = (eventListElement, event) => {
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replace(eventComponent, eventEditComponent);
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    }
-  };
-
-  const eventComponent = new EventComponent(event);
-  eventComponent.setEditButtonClickHandler(() => {
-    replace(eventEditComponent, eventComponent);
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
-
-  const eventEditComponent = new EventEditComponent(event, destinations);
-  eventEditComponent.setSubmitHandler((evt) => {
-    evt.preventDefault();
-    replace(eventComponent, eventEditComponent);
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  });
-
-  render(eventListElement, eventComponent);
-};
-
 const renderEvents = (tripDaysListElement, events, sortType = SortType.EVENT) => {
   const renderEventsLoop = (tripEventsListElement, points) => {
-    points.forEach((point) => {
-      renderEvent(tripEventsListElement, point);
+    return points.map((point) => {
+      const eventController = new EventController(tripEventsListElement);
+      eventController.render(point);
+      return eventController;
     });
   };
 
