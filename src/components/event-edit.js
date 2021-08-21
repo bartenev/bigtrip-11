@@ -176,10 +176,9 @@ export default class EventEdit extends AbstractSmartComponent {
     this._destination = this._event.destination;
 
     this._submitHandler = null;
-
+    this._closeButtonClickHandler = null;
+    this._favoriteButtonClickHandler = null;
     this._subscribeOnEvents();
-    // this._destinations = destinations;
-    // this._allOffers = allOffers;
   }
 
   getTemplate() {
@@ -197,14 +196,12 @@ export default class EventEdit extends AbstractSmartComponent {
 
   setFavoriteButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, handler);
+    this._favoriteButtonClickHandler = handler;
   }
 
-  setTypeButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__type-btn`).addEventListener(`click`, handler);
-  }
-
-  setDestinationButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, handler);
+  setCloseButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
+    this._closeButtonClickHandler = handler;
   }
 
   _subscribeOnEvents() {
@@ -238,6 +235,17 @@ export default class EventEdit extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
+    this.setFavoriteButtonClickHandler(this._favoriteButtonClickHandler);
+    this.setCloseButtonClickHandler(this._closeButtonClickHandler);
     this._subscribeOnEvents();
+  }
+
+  reset() {
+    const event = this._event;
+    this._destination = event.destination;
+    this._type = event.type;
+    this._offers = event.offers;
+
+    this.rerender();
   }
 }

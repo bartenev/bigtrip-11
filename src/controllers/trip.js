@@ -39,11 +39,11 @@ const getSortedEvents = (events, sortType) => {
   return sortedEvents;
 };
 
-const renderEvents = (tripDaysListElement, events, sortType, onDataChange) => {
+const renderEvents = (tripDaysListElement, events, sortType, onDataChange, onViewChange) => {
   let eventsControllers = [];
   const renderEventsLoop = (tripEventsListElement, points) => {
     return points.map((point) => {
-      const eventController = new EventController(tripEventsListElement, onDataChange);
+      const eventController = new EventController(tripEventsListElement, onDataChange, onViewChange);
       eventController.render(point);
       return eventController;
     });
@@ -96,6 +96,7 @@ export default class TripController {
     this._daysListComponent = new DaysListComponent();
 
     this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
   }
 
   render(events) {
@@ -111,14 +112,14 @@ export default class TripController {
 
     const tripDaysListElement = document.querySelector(`.trip-days`);
 
-    this._eventsControllers = renderEvents(tripDaysListElement, this._events, SortType.EVENT, this._onDataChange);
+    this._eventsControllers = renderEvents(tripDaysListElement, this._events, SortType.EVENT, this._onDataChange, this._onViewChange);
 
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
       const sortedEvents = getSortedEvents(this._events, sortType);
 
       tripDaysListElement.innerHTML = ``;
 
-      this._eventsControllers = renderEvents(tripDaysListElement, sortedEvents, sortType, this._onDataChange);
+      this._eventsControllers = renderEvents(tripDaysListElement, sortedEvents, sortType, this._onDataChange, this._onViewChange);
     });
   }
 
@@ -133,6 +134,10 @@ export default class TripController {
     this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
 
     eventController.render(newData);
+  }
+
+  _onViewChange() {
+    this._eventsControllers.forEach((it) => it.setDefaultView());
   }
 
 }
