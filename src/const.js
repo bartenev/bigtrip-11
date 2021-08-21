@@ -5,13 +5,11 @@ const generateWaypointTypes = () => {
   return transportWaypointTypes.map((it) => {
     return {
       name: it,
-      title: it[0].toUpperCase() + it.slice(1),
       type: `transport`,
     };
   }).concat(placeWaypointTypes.map((it) => {
     return {
       name: it,
-      title: it[0].toUpperCase() + it.slice(1),
       type: `place`,
     };
   }));

@@ -2,12 +2,11 @@ import AbstractComponent from "./abstract-component.js";
 
 const getTotalCost = (events) => {
   return events.reduce((sumEvents, event) => {
-    return sumEvents + event.price + event.offers.reduce((sumOffers, offer) => {
+    return sumEvents + event.basePrice + event.offers.reduce((sumOffers, offer) => {
       return sumOffers + (offer.isChecked ? offer.price : 0);
     }, 0);
   }, 0);
 };
-
 
 const createInfoCostTemplate = (events) => {
   const totalCost = getTotalCost(events);

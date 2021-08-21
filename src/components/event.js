@@ -8,10 +8,10 @@ const HOURS_PER_DAY = 24;
 
 const createOfferMarkup = (offers) => {
   return offers.filter((offer) => offer.isChecked === true).slice(0, 3).map((offer) => {
-    const {name, price} = offer;
+    const {title, price} = offer;
     return (
       `<li class="event__offer">
-        <span class="event__offer-title">${name}</span>
+        <span class="event__offer-title">${title}</span>
         &plus;
         &euro;&nbsp;<span class="event__offer-price">${price}</span>
        </li>`
@@ -33,9 +33,9 @@ const createOffersMarkup = (offers) => {
   }
 };
 
-const calculatingDurationEvent = (startTime, finishTime) => {
+const calculatingDurationEvent = (dateFrom, dateTo) => {
 
-  const durationEventInMilliseconds = finishTime.getTime() - startTime.getTime();
+  const durationEventInMilliseconds = dateTo.getTime() - dateFrom.getTime();
   const durationEventInHours = durationEventInMilliseconds / MILLISECONDS_PER_SECOND / SECONDS_PER_MINUTE / MINUTES_PER_HOUR;
   const durationEventInMinutes = durationEventInMilliseconds / MILLISECONDS_PER_SECOND / SECONDS_PER_MINUTE;
 
@@ -58,13 +58,13 @@ const calculatingDurationEvent = (startTime, finishTime) => {
 };
 
 const createEventTemplate = (event) => {
-  const {type, destination, price, startTime, finishTime, offers} = event;
-  const typeEvent = `${type.title} ${type.type === `transport` ? `to` : `in`}`;
-  const startTimeDate = formatTimeEvent(startTime);
-  const startTimeDateTime = formatTimeDateTime(startTime);
-  const finishTimeDate = formatTimeEvent(finishTime);
-  const finishTimeDateTime = formatTimeDateTime(finishTime);
-  const duration = calculatingDurationEvent(startTime, finishTime);
+  const {type, destination, basePrice, dateFrom, dateTo, offers} = event;
+  const typeEvent = `${type.name[0].toUpperCase() + type.name.slice(1)} ${type.type === `transport` ? `to` : `in`}`;
+  const dateFromDate = formatTimeEvent(dateFrom);
+  const dateFromDateTime = formatTimeDateTime(dateFrom);
+  const dateToDate = formatTimeEvent(dateTo);
+  const dateToDateTime = formatTimeDateTime(dateTo);
+  const duration = calculatingDurationEvent(dateFrom, dateTo);
   const offersMarkup = createOffersMarkup(offers);
   return (
     `<li class="trip-events__item">
@@ -72,19 +72,19 @@ const createEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type.name}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${typeEvent} ${destination}</h3>
+        <h3 class="event__title">${typeEvent} ${destination.name}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${startTimeDateTime}">${startTimeDate}</time>
+            <time class="event__start-time" datetime="${dateFromDateTime}">${dateFromDate}</time>
             &mdash;
-            <time class="event__end-time" datetime="${finishTimeDateTime}">${finishTimeDate}</time>
+            <time class="event__end-time" datetime="${dateToDateTime}">${dateToDate}</time>
           </p>
           <p class="event__duration">${duration}</p>
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${price}</span>
+          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
         ${offersMarkup}
         <button class="event__rollup-btn" type="button">

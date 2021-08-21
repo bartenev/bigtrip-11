@@ -1,7 +1,7 @@
 import {render, replace} from "../utils/render.js";
 import EventComponent from "../components/event.js";
 import EventEditComponent from "../components/event-edit.js";
-import {destinations} from "../mock/waypoint.js";
+import {destinations, offers} from "../mock/waypoint.js";
 
 export default class EventController {
   constructor(container, onDataChange) {
@@ -15,7 +15,7 @@ export default class EventController {
 
   render(event) {
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event, destinations);
+    this._eventEditComponent = new EventEditComponent(event, destinations, offers);
 
     this._eventComponent.setEditButtonClickHandler(() => {
       this._replaceEventToEdit();

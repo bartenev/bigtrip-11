@@ -9,7 +9,7 @@ import TripController from "./controllers/trip";
 
 const EVENTS_COUNT = 20;
 
-const events = generateEvents(EVENTS_COUNT).sort((firstEvent, secondEvent) => (firstEvent.startTime - secondEvent.startTime));
+const events = generateEvents(EVENTS_COUNT).sort((firstEvent, secondEvent) => (firstEvent.dateFrom - secondEvent.dateFrom));
 
 // ---------
 console.log(events.map((event) => {

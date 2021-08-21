@@ -11,11 +11,11 @@ const getUniqueDays = (listOfEvent) => {
   let days = [];
 
   listOfEvent.forEach((event) => {
-    let isSameItemFound = days.some((day) => day.getDate() === event.startTime.getDate()
-      && day.getMonth() === event.startTime.getMonth() && day.getFullYear() === event.startTime.getFullYear());
+    let isSameItemFound = days.some((day) => day.getDate() === event.dateFrom.getDate()
+      && day.getMonth() === event.dateFrom.getMonth() && day.getFullYear() === event.dateFrom.getFullYear());
 
     if (!isSameItemFound) {
-      days.push(event.startTime);
+      days.push(event.dateFrom);
     }
   });
   return days;
@@ -30,10 +30,10 @@ const getSortedEvents = (events, sortType) => {
       sortedEvents = eventsDuplicate;
       break;
     case SortType.TIME:
-      sortedEvents = eventsDuplicate.sort((firstEvent, secondEvent) => (secondEvent.finishTime - secondEvent.startTime) - (firstEvent.finishTime - firstEvent.startTime));
+      sortedEvents = eventsDuplicate.sort((firstEvent, secondEvent) => (secondEvent.dateTo - secondEvent.dateFrom) - (firstEvent.dateTo - firstEvent.dateFrom));
       break;
     case SortType.PRICE:
-      sortedEvents = eventsDuplicate.sort((firstEvent, secondEvent) => secondEvent.price - firstEvent.price);
+      sortedEvents = eventsDuplicate.sort((firstEvent, secondEvent) => secondEvent.basePrice - firstEvent.basePrice);
       break;
   }
   return sortedEvents;
@@ -62,9 +62,9 @@ const renderEvents = (tripDaysListElement, events, sortType, onDataChange) => {
       const tripEventsListElements = document.querySelectorAll(`.trip-events__list`);
 
       const firstEvent = eventsDuplicate[0];
-      const lastElementIndex = eventsDuplicate.filter((event) => event.startTime.getDate() === firstEvent.startTime.getDate()
-        && event.startTime.getMonth() === firstEvent.startTime.getMonth()
-        && event.startTime.getFullYear() === firstEvent.startTime.getFullYear()).length;
+      const lastElementIndex = eventsDuplicate.filter((event) => event.dateFrom.getDate() === firstEvent.dateFrom.getDate()
+        && event.dateFrom.getMonth() === firstEvent.dateFrom.getMonth()
+        && event.dateFrom.getFullYear() === firstEvent.dateFrom.getFullYear()).length;
 
       let remainingEvents = eventsDuplicate.splice(lastElementIndex);
 

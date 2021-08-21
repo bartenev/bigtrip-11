@@ -4,8 +4,8 @@ import AbstractComponent from "./abstract-component.js";
 const getDates = (events) => {
   let dates = ``;
 
-  const firstEvent = events[0].startTime;
-  const lastEvent = events[events.length - 1].startTime;
+  const firstEvent = events[0].dateFrom;
+  const lastEvent = events[events.length - 1].dateFrom;
 
   const firstEventDay = castTimeFormat(firstEvent.getDate());
   const lastEventDay = castTimeFormat(lastEvent.getDate());
@@ -28,8 +28,8 @@ const getDates = (events) => {
 const getDirections = (events) => {
   const directions = [];
   for (const [index, event] of events.entries()) {
-    if (directions === [] || event.destination !== directions[index - 1]) {
-      directions.push(event.destination);
+    if (directions === [] || event.destination.name !== directions[index - 1]) {
+      directions.push(event.destination.name);
     }
   }
   let route = ``;
