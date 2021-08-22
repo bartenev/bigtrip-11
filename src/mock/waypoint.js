@@ -23,31 +23,6 @@ In rutrum ac purus sit amet tempus.`);
 
 const descriptionItems = descriptionText.split(`.\n`);
 
-const destinations = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`];
-
-const additionalOffers = [
-  {
-    type: `luggage`,
-    name: `Add luggage`,
-  },
-  {
-    type: `comfort`,
-    name: `Switch to comfort class`,
-  },
-  {
-    type: `meal`,
-    name: `Add meal`,
-  },
-  {
-    type: `seats`,
-    name: `Choose seats`,
-  },
-  {
-    type: `train`,
-    name: `Travel by train`,
-  },
-];
-
 const getDescription = () => {
   let descriptionItem = ``;
   for (let i = 0; i < getRandomIntegerNumber(1, 5); i++) {
@@ -57,16 +32,49 @@ const getDescription = () => {
   return descriptionItem;
 };
 
-const getPhotos = () => {
+const getPictures = () => {
   let photos = [];
   for (let i = 0; i < 5; i++) {
     photos.push({
-      url: `http://picsum.photos/248/152?r=${Math.random()}`,
+      src: `http://picsum.photos/248/152?r=${Math.random()}`,
       description: `Event photo`,
     });
   }
   return photos;
 };
+
+const destinationsName = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`];
+
+const destinations = destinationsName.map((name) => {
+  return {
+    description: getDescription(),
+    name,
+    pictures: getPictures(),
+  };
+});
+
+const additionalOffers = [
+  {
+    type: `luggage`,
+    title: `Add luggage`,
+  },
+  {
+    type: `comfort`,
+    title: `Switch to comfort class`,
+  },
+  {
+    type: `meal`,
+    title: `Add meal`,
+  },
+  {
+    type: `seats`,
+    title: `Choose seats`,
+  },
+  {
+    type: `train`,
+    title: `Travel by train`,
+  },
+];
 
 const getRandomDate = () => {
   const targetDate = new Date();
@@ -88,7 +96,7 @@ const getRandomOffers = (count) => {
   let randomOffers = additionalOffers.map((it) => {
     return {
       type: it.type,
-      name: it.name,
+      title: it.title,
       price: getRandomIntegerNumber(1, 300),
       isChecked: trueOrFalse(),
     };
@@ -108,26 +116,37 @@ const getRandomOffers = (count) => {
   return offers;
 };
 
-const generateEvent = () => {
-  let startTime = getRandomDate();
-  let finishTime = getRandomDate();
+const offers = WAYPOINT_TYPES.map((type) => {
+  return {
+    type,
+    offers: getRandomOffers(getRandomIntegerNumber(0, 5)),
+  };
+});
 
-  if (finishTime < startTime) {
-    const temp = startTime;
-    startTime = finishTime;
-    finishTime = temp;
+let indexEvent = -1;
+
+const generateEvent = () => {
+  const destination = destinations[getRandomIntegerNumber(0, destinations.length - 1)];
+  const type = WAYPOINT_TYPES[getRandomIntegerNumber(0, WAYPOINT_TYPES.length - 1)];
+  let dateFrom = getRandomDate();
+  let dateTo = getRandomDate();
+  indexEvent += 1;
+
+  if (dateTo < dateFrom) {
+    const temp = dateFrom;
+    dateFrom = dateTo;
+    dateTo = temp;
   }
 
   return {
-    type: WAYPOINT_TYPES[getRandomIntegerNumber(0, WAYPOINT_TYPES.length - 1)],
-    destination: destinations[getRandomIntegerNumber(0, destinations.length - 1)],
-    description: getDescription(),
-    photos: getPhotos(),
-    price: Math.round(Math.random() * 100),
-    startTime,
-    finishTime,
-    offers: getRandomOffers(getRandomIntegerNumber(0, 5)),
+    basePrice: Math.round(Math.random() * 100),
+    dateFrom,
+    dateTo,
+    destination,
+    id: indexEvent,
     isFavorite: trueOrFalse(),
+    offers: offers.find((it) => it.type === type).offers,
+    type,
   };
 };
 
@@ -137,4 +156,4 @@ const generateEvents = (count) => {
     .map(generateEvent);
 };
 
-export {generateEvents, destinations, additionalOffers};
+export {generateEvents, destinations, offers, additionalOffers};
