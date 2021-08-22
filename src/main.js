@@ -13,7 +13,7 @@ const events = generateEvents(EVENTS_COUNT).sort((firstEvent, secondEvent) => (f
 
 // ---------
 console.log(events.map((event) => {
-  return event.startTime;
+  return event.dateFrom;
 })
 );
 // ----------
