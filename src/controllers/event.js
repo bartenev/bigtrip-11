@@ -1,7 +1,6 @@
 import {render, replace} from "../utils/render.js";
 import EventComponent from "../components/event.js";
 import EventEditComponent from "../components/event-edit.js";
-import {destinations, offers} from "../mock/waypoint.js";
 
 const Mode = {
   DEFAULT: `default`,

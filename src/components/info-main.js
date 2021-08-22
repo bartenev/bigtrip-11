@@ -1,4 +1,4 @@
-import {castTimeFormat, formatMMM} from "../utils/common.js";
+import {formatTimeDD, formatTimeMMM} from "../utils/common.js";
 import AbstractComponent from "./abstract-component.js";
 
 const getDates = (events) => {
@@ -7,10 +7,10 @@ const getDates = (events) => {
   const firstEvent = events[0].dateFrom;
   const lastEvent = events[events.length - 1].dateFrom;
 
-  const firstEventDay = castTimeFormat(firstEvent.getDate());
-  const lastEventDay = castTimeFormat(lastEvent.getDate());
-  const firstEventMonth = formatMMM(firstEvent.getMonth());
-  const lastEventMonth = formatMMM(lastEvent.getMonth());
+  const firstEventDay = formatTimeDD(firstEvent);
+  const lastEventDay = formatTimeDD(lastEvent);
+  const firstEventMonth = formatTimeMMM(firstEvent);
+  const lastEventMonth = formatTimeMMM(lastEvent);
 
   if (firstEvent.getMonth() === lastEvent.getMonth()) {
     if (firstEvent.getDate() === lastEvent.getDate()) {

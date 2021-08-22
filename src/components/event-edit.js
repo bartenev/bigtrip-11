@@ -2,6 +2,8 @@ import {WAYPOINT_TYPES} from "../const.js";
 import {formatTimeEditEvent} from "../utils/common.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {destinations as allDestinations, offers as allOffers} from "../mock/waypoint.js";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 const createEventTypeMarkup = (types, kindOfEventType, currentType, id) => {
   return types.filter((type) => type.type === kindOfEventType).map((type) => {
@@ -167,7 +169,7 @@ const createEventEditTemplate = (event, options = {}) => {
 };
 
 export default class EventEdit extends AbstractSmartComponent {
-  constructor(event) { // , destinations, allOffers) {
+  constructor(event) {
     super();
 
     this._event = event;
@@ -179,6 +181,8 @@ export default class EventEdit extends AbstractSmartComponent {
     this._closeButtonClickHandler = null;
     this._favoriteButtonClickHandler = null;
     this._subscribeOnEvents();
+
+    this._applyFlatpickr();
   }
 
   getTemplate() {
@@ -186,7 +190,7 @@ export default class EventEdit extends AbstractSmartComponent {
       destination: this._destination,
       type: this._type,
       offers: this._offers,
-    }); // , this._cities, this._allOffers);
+    });
   }
 
   setSubmitHandler(handler) {
@@ -247,5 +251,31 @@ export default class EventEdit extends AbstractSmartComponent {
     this._offers = event.offers;
 
     this.rerender();
+  }
+
+  rerender() {
+    super.rerender();
+    this._applyFlatpickr();
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    const dateElements = Array.from(this.getElement().querySelectorAll(`.event__input--time`));
+
+    dateElements.forEach((date) => {
+      this._flatpickr = flatpickr(date, {
+        allInput: true,
+        allowInput: true,
+        dateFormat: `d/m/y H:i`,
+        enableTime: true,
+        // eslint-disable-next-line camelcase
+        time_24hr: true,
+        // defaultDate: this._task.dueDate || `today`,
+      });
+    });
   }
 }
