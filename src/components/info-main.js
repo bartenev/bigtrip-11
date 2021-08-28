@@ -56,13 +56,13 @@ const createInfoMainTemplate = (events) => {
 };
 
 export default class InfoMain extends AbstractComponent {
-  constructor(events) {
+  constructor(eventsModel) {
     super();
 
-    this._events = events;
+    this._eventsModel = eventsModel;
   }
 
   getTemplate() {
-    return createInfoMainTemplate(this._events);
+    return createInfoMainTemplate(this._eventsModel.getEventsAll());
   }
 }

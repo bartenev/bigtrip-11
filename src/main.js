@@ -6,7 +6,8 @@ import InfoComponent from './components/info.js';
 import InfoMainComponent from './components/info-main.js';
 import InfoCostComponent from './components/info-cost.js';
 import TabsComponent from './components/tabs.js';
-import FiltersComponent from './components/filters.js';
+// import FiltersComponent from './components/filters.js';
+import FilterController from "./controllers/filter";
 import {render, RenderPosition} from "./utils/render";
 import TripController from "./controllers/trip";
 
@@ -33,12 +34,13 @@ offersModel.setOffers(offers);
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoComponent = new InfoComponent();
 render(tripMainElement, tripInfoComponent, RenderPosition.AFTERBEGIN);
-render(tripInfoComponent.getElement(), new InfoMainComponent(events));
-render(tripInfoComponent.getElement(), new InfoCostComponent(events));
+render(tripInfoComponent.getElement(), new InfoMainComponent(eventsModel));
+render(tripInfoComponent.getElement(), new InfoCostComponent(eventsModel));
 
 const tripControlsElement = document.querySelector(`.trip-controls`);
 render(tripControlsElement, new TabsComponent(), RenderPosition.AFTERBEGIN);
-render(tripControlsElement, new FiltersComponent());
+const filterController = new FilterController(tripControlsElement, eventsModel);
+filterController.render();
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 const tripController = new TripController(tripEventsElement, eventsModel, destinationsModel, offersModel);

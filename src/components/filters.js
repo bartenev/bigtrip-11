@@ -1,9 +1,14 @@
 import AbstractComponent from "./abstract-component.js";
+import {FilterType} from "../const.js";
 
-const filterNames = [`everything`, `future`, `past`];
+const FILTER_ID_PREFIX = `filter-`;
+
+const getFilterNameById = (id) => {
+  return id.substring(FILTER_ID_PREFIX.length);
+};
 
 const createFiltersMarkup = () => {
-  return filterNames.map((name) => {
+  return Object.values(FilterType).map((name) => {
     const isChecked = name === `everything` ? `checked` : ``;
     return (
       `<div class="trip-filters__filter">
@@ -27,5 +32,12 @@ const createFiltersTemplate = () => {
 export default class Filters extends AbstractComponent {
   getTemplate() {
     return createFiltersTemplate();
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      const filterName = getFilterNameById(evt.target.id);
+      handler(filterName);
+    });
   }
 }

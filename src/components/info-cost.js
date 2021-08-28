@@ -18,13 +18,13 @@ const createInfoCostTemplate = (events) => {
 };
 
 export default class InfoCost extends AbstractComponent {
-  constructor(events) {
+  constructor(eventsModel) {
     super();
 
-    this._events = events;
+    this._eventsModel = eventsModel;
   }
 
   getTemplate() {
-    return createInfoCostTemplate(this._events);
+    return createInfoCostTemplate(this._eventsModel.getEventsAll());
   }
 }

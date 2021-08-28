@@ -1,4 +1,4 @@
-import {render, replace} from "../utils/render.js";
+import {render, replace, remove} from "../utils/render.js";
 import EventComponent from "../components/event.js";
 import EventEditComponent from "../components/event-edit.js";
 
@@ -62,6 +62,12 @@ export default class EventController {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
     }
+  }
+
+  destroy() {
+    remove(this._eventComponent);
+    remove(this._eventEditComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _replaceEventToEdit() {
