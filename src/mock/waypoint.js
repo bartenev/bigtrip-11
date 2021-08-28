@@ -156,4 +156,4 @@ const generateEvents = (count) => {
     .map(generateEvent);
 };
 
-export {generateEvents, destinations, offers, additionalOffers};
+export {generateEvents, destinations, offers};

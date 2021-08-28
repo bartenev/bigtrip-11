@@ -1,7 +1,6 @@
 import {WAYPOINT_TYPES} from "../const.js";
 import {formatTimeEditEvent} from "../utils/common.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {destinations as allDestinations, offers as allOffers} from "../mock/waypoint.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
@@ -65,7 +64,7 @@ const createPhotosMarkup = (photos) => {
   }).join(`\n`);
 };
 
-const createEventEditTemplate = (event, options = {}) => {
+const createEventEditTemplate = (event, destinationsModel, options = {}) => {
 
   const {id, basePrice, dateFrom, dateTo, isFavorite} = event;
   const {type, destination, offers} = options;
@@ -75,7 +74,7 @@ const createEventEditTemplate = (event, options = {}) => {
   const placeEventTypeMarkup = createEventTypeMarkup(WAYPOINT_TYPES, `place`, type, id);
   const dateFromDate = formatTimeEditEvent(dateFrom);
   const dateToDate = formatTimeEditEvent(dateTo);
-  const destinationMarkup = createDestinationMarkup(allDestinations);
+  const destinationMarkup = createDestinationMarkup(destinationsModel.getDestinations());
   const offersMarkup = offers.length ? createOffersTemplate(offers, id) : ``;
   const photosMarkup = createPhotosMarkup(destination.pictures);
   const favorite = isFavorite ? `checked` : ``;
@@ -169,10 +168,13 @@ const createEventEditTemplate = (event, options = {}) => {
 };
 
 export default class EventEdit extends AbstractSmartComponent {
-  constructor(event) {
+  constructor(event, destinationsModel, offersModel) {
     super();
 
     this._event = event;
+    this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
+
     this._type = this._event.type;
     this._offers = this._event.offers;
     this._destination = this._event.destination;
@@ -186,7 +188,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, {
+    return createEventEditTemplate(this._event, this._destinationsModel, {
       destination: this._destination,
       type: this._type,
       offers: this._offers,
@@ -219,7 +221,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
         if (currentType !== newType) {
           this._type = WAYPOINT_TYPES.find((it) => it.name === newType);
-          this._offers = allOffers.find((it) => it.type.name === newType).offers;
+          this._offers = this._offersModel.getOffer(newType).offers;
 
           this.rerender();
         }
@@ -230,8 +232,8 @@ export default class EventEdit extends AbstractSmartComponent {
         const currentDestination = this._destination.name;
         const newDestination = evt.target.value;
 
-        if (allDestinations.some((it) => it.name === newDestination) && newDestination !== currentDestination) {
-          this._destination = allDestinations.find((it) => it.name === newDestination);
+        if (this._destinationsModel.isNameValid(newDestination) && newDestination !== currentDestination) {
+          this._destination = this._destinationsModel.getDestination(newDestination);
           this.rerender();
         }
       });

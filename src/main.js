@@ -1,4 +1,7 @@
-import {generateEvents} from "./mock/waypoint.js";
+import {generateEvents, destinations, offers} from "./mock/waypoint.js";
+import EventsModel from "./models/events.js";
+import DestinationsModel from "./models/destinations.js";
+import OffersModel from "./models/offers";
 import InfoComponent from './components/info.js';
 import InfoMainComponent from './components/info-main.js';
 import InfoCostComponent from './components/info-cost.js';
@@ -9,14 +12,23 @@ import TripController from "./controllers/trip";
 
 const EVENTS_COUNT = 20;
 
-const events = generateEvents(EVENTS_COUNT).sort((firstEvent, secondEvent) => (firstEvent.dateFrom - secondEvent.dateFrom));
+const events = generateEvents(EVENTS_COUNT);
 
 // ---------
-console.log(events.map((event) => {
+const sortEvents = events.sort((firstEvent, secondEvent) => (firstEvent.dateFrom - secondEvent.dateFrom));
+console.log(sortEvents.map((event) => {
   return event.dateFrom;
-})
-);
-// ----------
+}));
+// ---------
+
+const eventsModel = new EventsModel();
+eventsModel.setEvents(events);
+
+const destinationsModel = new DestinationsModel();
+destinationsModel.setDestinations(destinations);
+
+const offersModel = new OffersModel();
+offersModel.setOffers(offers);
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoComponent = new InfoComponent();
@@ -29,5 +41,5 @@ render(tripControlsElement, new TabsComponent(), RenderPosition.AFTERBEGIN);
 render(tripControlsElement, new FiltersComponent());
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tripController = new TripController(tripEventsElement);
-tripController.render(events);
+const tripController = new TripController(tripEventsElement, eventsModel, destinationsModel, offersModel);
+tripController.render();
