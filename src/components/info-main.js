@@ -1,5 +1,5 @@
 import {formatTimeDD, formatTimeMMM} from "../utils/common.js";
-import AbstractComponent from "./abstract-component.js";
+import AbstractSmartComponent from "./abstract-smart-component";
 
 const getDates = (events) => {
   let dates = ``;
@@ -55,14 +55,29 @@ const createInfoMainTemplate = (events) => {
   );
 };
 
-export default class InfoMain extends AbstractComponent {
+export default class InfoMain extends AbstractSmartComponent {
   constructor(eventsModel) {
     super();
 
     this._eventsModel = eventsModel;
+
+    this._onDataChange = this._onDataChange.bind(this);
+    this._eventsModel.setDataChangeHandler(this._onDataChange);
   }
 
   getTemplate() {
     return createInfoMainTemplate(this._eventsModel.getEventsAll());
+  }
+
+  _onDataChange() {
+    this.rerender();
+  }
+
+  rerender() {
+    super.rerender();
+  }
+
+  recoveryListeners() {
+
   }
 }

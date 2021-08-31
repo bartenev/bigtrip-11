@@ -1,6 +1,7 @@
 const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`,
+  AFTER: `after`,
 };
 
 const createElement = (template) => {
@@ -17,6 +18,9 @@ const render = (container, component, place = RenderPosition.BEFOREEND) => {
       break;
     case RenderPosition.BEFOREEND:
       container.append(component.getElement());
+      break;
+    case RenderPosition.AFTER:
+      container.after(component.getElement());
       break;
   }
 };

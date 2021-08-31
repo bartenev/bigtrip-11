@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract-component.js";
+import AbstractSmartComponent from "./abstract-smart-component";
 
 const getTotalCost = (events) => {
   return events.reduce((sumEvents, event) => {
@@ -17,14 +17,28 @@ const createInfoCostTemplate = (events) => {
   );
 };
 
-export default class InfoCost extends AbstractComponent {
+export default class InfoCost extends AbstractSmartComponent {
   constructor(eventsModel) {
     super();
 
     this._eventsModel = eventsModel;
+    this._onDataChange = this._onDataChange.bind(this);
+    this._eventsModel.setDataChangeHandler(this._onDataChange);
   }
 
   getTemplate() {
     return createInfoCostTemplate(this._eventsModel.getEventsAll());
+  }
+
+  _onDataChange() {
+    this.rerender();
+  }
+
+  rerender() {
+    super.rerender();
+  }
+
+  recoveryListeners() {
+
   }
 }

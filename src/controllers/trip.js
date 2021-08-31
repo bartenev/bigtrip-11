@@ -1,11 +1,11 @@
-import {render} from "../utils/render.js";
+import {remove, render} from "../utils/render.js";
 import NoPointsComponent from "../components/no-points.js";
 import SortComponent from "../components/sort.js";
 import DaysListComponent from "../components/days-list.js";
 import DayComponent from "../components/day.js";
 import EventsListComponent from "../components/events-list.js";
 import {SortType} from "../components/sort.js";
-import EventController from "./event.js";
+import EventController, {EmptyEvent, Mode as EventControllerMode} from "./event.js";
 
 const getUniqueDays = (listOfEvent) => {
   let days = [];
@@ -42,7 +42,7 @@ const getSortedEvents = (events, sortType) => {
 const renderEvents = (tripEventsListElement, events, destinationsModel, offersModel, onDataChange, onViewChange) => {
   return events.map((point) => {
     const eventController = new EventController(tripEventsListElement, destinationsModel, offersModel, onDataChange, onViewChange);
-    eventController.render(point);
+    eventController.render(point, EventControllerMode.DEFAULT);
     return eventController;
   });
 };
@@ -63,6 +63,9 @@ export default class TripController {
     this._destinationsModel = destinationsModel;
     this._offersModel = offersModel;
     this._eventsControllers = [];
+    this._creatingTask = null;
+
+    this._sortType = SortType.EVENT;
 
     this._container = container;
     this._noPointsComponent = new NoPointsComponent();
@@ -80,7 +83,7 @@ export default class TripController {
     const events = this._eventsModel.getEvents();
 
     if (!events.length) {
-      render(this._container, this._noPointsComponent);
+      this._renderNoPointsElement();
       return;
     }
 
@@ -97,7 +100,27 @@ export default class TripController {
     });
   }
 
+  createTask() {
+    if (this._creatingTask) {
+      return;
+    }
+    this._creatingTask = new EventController(this._sortComponent.getElement(), this._destinationsModel, this._offersModel, this._onDataChange, this._onViewChange);
+    this._creatingTask.render(EmptyEvent, EventControllerMode.ADDING);
+  }
+
+  _renderNoPointsElement() {
+    render(this._container, this._noPointsComponent);
+  }
+
   _renderEvents(events, sortType) {
+
+    if (!events.length) {
+      this._renderNoPointsElement();
+    } else if (document.contains(this._noPointsComponent.getElement())) {
+      remove(this._noPointsComponent);
+    }
+
+    this._sortType = sortType;
     let sortEvents = getSortedEvents(events, sortType);
 
     if (sortType === SortType.EVENT) {
@@ -134,11 +157,36 @@ export default class TripController {
     this._renderEvents(this._eventsModel.getEvents(), sortType);
   }
 
-  _onDataChange(oldData, newData) {
-    this._eventsModel.updateEvent(oldData.id, newData);
+  _onDataChange(eventController, oldData, newData, isClose = true) {
+    if (oldData === EmptyEvent) {
+      console.log(`добавление`);
+      this._creatingTask = null;
+      if (newData === null) {
+        eventController.destroy();
+        this._updateEvents(this._sortType);
+      } else {
+        this._eventsModel.addEvent(newData);
+        // eventController.render(newData, EventControllerMode.DEFAULT);
+        this._eventsControllers = [].concat(eventController, this._eventsControllers);
+        this._updateEvents(this._sortType);
+      }
+    } else if (newData === null) {
+      console.log(`удаление`);
 
-    const eventController = this._eventsControllers.find((it) => it._eventComponent._event === oldData);
-    eventController.render(newData);
+      this._eventsModel.removeEvent(oldData.id);
+      this._updateEvents(this._sortType);
+    } else {
+      console.log(`редактирование`);
+
+      // const eventController = this._eventsControllers.find((it) => it._eventComponent._event === oldData);
+      const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
+      if (isSuccess) {
+        eventController.render(newData, EventControllerMode.DEFAULT);
+        if (isClose) {
+          this._updateEvents(this._sortType);
+        }
+      }
+    }
   }
 
   _onViewChange() {

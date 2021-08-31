@@ -1,10 +1,23 @@
-import {render, replace, remove} from "../utils/render.js";
+import {render, replace, remove, RenderPosition} from "../utils/render.js";
 import EventComponent from "../components/event.js";
 import EventEditComponent from "../components/event-edit.js";
+import {WAYPOINT_TYPES} from "../const";
 
-const Mode = {
+export const Mode = {
+  ADDING: `adding`,
   DEFAULT: `default`,
   EDIT: `edit`,
+};
+
+export const EmptyEvent = {
+  basePrice: ``,
+  dateFrom: new Date().setHours(0, 0, 0),
+  dateTo: new Date().setHours(0, 0, 1),
+  destination: ``,
+  id: String(Math.random()).replace(`.`, ``),
+  isFavorite: false,
+  offers: [],
+  type: WAYPOINT_TYPES[0],
 };
 
 export default class EventController {
@@ -21,13 +34,17 @@ export default class EventController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
-  render(event) {
-
+  render(event, mode) {
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
+    this._mode = mode;
+
+    if (this._mode === Mode.ADDING) {
+      event.offers = this._offersModel.getOffer(event.type.name).offers;
+    }
 
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event, this._destinationsModel, this._offersModel);
+    this._eventEditComponent = new EventEditComponent(event, this._destinationsModel, this._offersModel, this._mode);
 
     this._eventComponent.setEditButtonClickHandler(() => {
       this._replaceEventToEdit();
@@ -36,13 +53,23 @@ export default class EventController {
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      this._replaceEditToEvent();
+      const data = this._eventEditComponent.getData();
+      if (data) {
+        this._onDataChange(this, event, data);
+        this._replaceEditToEvent();
+      }
+    });
+
+    this._eventEditComponent.setRemoveHandler((evt) => {
+      evt.preventDefault();
+      this._onDataChange(this, event, null);
+      // this._replaceEditToEvent();
     });
 
     this._eventEditComponent.setFavoriteButtonClickHandler(() => {
-      this._onDataChange(event, Object.assign({}, event, {
+      this._onDataChange(this, event, Object.assign({}, event, {
         isFavorite: !event.isFavorite,
-      }));
+      }), false);
     });
 
     this._eventEditComponent.setCloseButtonClickHandler(() => {
@@ -50,11 +77,24 @@ export default class EventController {
       this._replaceEditToEvent();
     });
 
-    if (oldEventComponent && oldEventEditComponent) {
-      replace(this._eventComponent, oldEventComponent);
-      replace(this._eventEditComponent, oldEventEditComponent);
-    } else {
-      render(this._container, this._eventComponent);
+    switch (mode) {
+      case Mode.DEFAULT:
+        if (oldEventComponent && oldEventEditComponent) {
+          replace(this._eventComponent, oldEventComponent);
+          replace(this._eventEditComponent, oldEventEditComponent);
+        } else {
+          render(this._container, this._eventComponent);
+        }
+        break;
+      case Mode.ADDING:
+        // if (oldTaskEditComponent && oldTaskComponent) {
+        //   remove(oldTaskComponent);
+        //   remove(oldTaskEditComponent);
+        // }
+
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+        render(this._container, this._eventEditComponent, RenderPosition.AFTER);
+        break;
     }
   }
 
@@ -77,9 +117,14 @@ export default class EventController {
   }
 
   _replaceEditToEvent() {
-    this._eventEditComponent.reset();
-    replace(this._eventComponent, this._eventEditComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+    this._eventEditComponent.reset();
+
+    if (document.contains(this._eventEditComponent.getElement())) {
+      replace(this._eventComponent, this._eventEditComponent);
+      console.log(111);
+    }
+
     this._mode = Mode.DEFAULT;
   }
 

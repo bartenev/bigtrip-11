@@ -5,13 +5,13 @@ import OffersModel from "./models/offers";
 import InfoComponent from './components/info.js';
 import InfoMainComponent from './components/info-main.js';
 import InfoCostComponent from './components/info-cost.js';
-import TabsComponent from './components/tabs.js';
-// import FiltersComponent from './components/filters.js';
+import TabsComponent, {TabsItem} from './components/tabs.js';
 import FilterController from "./controllers/filter";
 import {render, RenderPosition} from "./utils/render";
 import TripController from "./controllers/trip";
+import NewEventButtonComponent from "./components/new-event-button.js";
 
-const EVENTS_COUNT = 20;
+const EVENTS_COUNT = 5;
 
 const events = generateEvents(EVENTS_COUNT);
 
@@ -38,10 +38,40 @@ render(tripInfoComponent.getElement(), new InfoMainComponent(eventsModel));
 render(tripInfoComponent.getElement(), new InfoCostComponent(eventsModel));
 
 const tripControlsElement = document.querySelector(`.trip-controls`);
-render(tripControlsElement, new TabsComponent(), RenderPosition.AFTERBEGIN);
+const tabsComponent = new TabsComponent();
+render(tripControlsElement, tabsComponent, RenderPosition.AFTERBEGIN);
 const filterController = new FilterController(tripControlsElement, eventsModel);
 filterController.render();
+
+const newEventButtonComponent = new NewEventButtonComponent();
+render(tripMainElement, newEventButtonComponent);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
 const tripController = new TripController(tripEventsElement, eventsModel, destinationsModel, offersModel);
 tripController.render();
+
+newEventButtonComponent.setButtonClickHandler(() => {
+  tabsComponent.setActiveItem(TabsItem.TABLE);
+  // statisticsComponent.hide();
+  // boardController.show();
+  tripController.createTask();
+});
+
+// siteMenuComponent.setOnChange((menuItem) => {
+//   switch (menuItem) {
+//     case MenuItem.NEW_TASK:
+//       siteMenuComponent.setActiveItem(MenuItem.TASKS);
+//       statisticsComponent.hide();
+//       boardController.show();
+//       boardController.createTask();
+//       break;
+//     case MenuItem.STATISTICS:
+//       boardController.hide();
+//       statisticsComponent.show();
+//       break;
+//     case MenuItem.TASKS:
+//       statisticsComponent.hide();
+//       boardController.show();
+//       break;
+//   }
+

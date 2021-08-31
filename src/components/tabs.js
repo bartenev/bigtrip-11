@@ -1,5 +1,10 @@
 import AbstractComponent from "./abstract-component.js";
 
+export const TabsItem = {
+  STATS: `Stats`,
+  TABLE: `Table`
+};
+
 const createTabsTemplate = () => {
   return (
     `<nav class="trip-controls__trip-tabs  trip-tabs">
@@ -12,5 +17,9 @@ const createTabsTemplate = () => {
 export default class Tabs extends AbstractComponent {
   getTemplate() {
     return createTabsTemplate();
+  }
+
+  setActiveItem() {
+
   }
 }
