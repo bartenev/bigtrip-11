@@ -17,6 +17,12 @@ const generateWaypointTypes = () => {
 
 const WAYPOINT_TYPES = generateWaypointTypes();
 
-const MONTH_NAMES = [`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`, `October`, `November`, `December`];
+// const MONTH_NAMES = [`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`, `October`, `November`, `December`];
 
-export {WAYPOINT_TYPES, MONTH_NAMES};
+const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`,
+};
+
+export {WAYPOINT_TYPES, FilterType};

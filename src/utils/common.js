@@ -92,4 +92,16 @@ const formatTimeSubtract = (startDate, finalDate) => {
   return durationEvent;
 };
 
-export {formatTimeDD, formatTimeMMM, formatTimeEditEvent, formatTimeEvent, formatTimeDateTime, formatTimeMD, castTimeFormat, formatTimeSubtract};
+const parseDate = (date) => {
+  const splitDate = date.replace(/[ :]/g, `/`).split(`/`);
+
+  const day = splitDate[0];
+  const month = splitDate[1];
+  const year = `20` + splitDate[2];
+  const hours = splitDate[3];
+  const minutes = splitDate[4];
+
+  return new Date(`${year}-${month}-${day}T${hours}:${minutes}`);
+};
+
+export {formatTimeDD, formatTimeMMM, formatTimeEditEvent, formatTimeEvent, formatTimeDateTime, formatTimeMD, castTimeFormat, formatTimeSubtract, parseDate};

@@ -1,7 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
 
-const sortNames = [`event`, `time`, `price`];
-
 export const SortType = {
   EVENT: `event`,
   TIME: `time`,
@@ -17,7 +15,7 @@ const createSvgMarkup = () => {
 };
 
 const createSortMarkup = () => {
-  return sortNames.map((name) => {
+  return Object.values(SortType).map((name) => {
     const svgMarkup = name !== `event` ? createSvgMarkup() : ``;
     const isChecked = name === `event` ? `checked` : ``;
 
@@ -68,11 +66,15 @@ export default class Sort extends AbstractComponent {
         return;
       }
 
-      this.getElement().querySelector(`#sort-${this._currentSortType}`).removeAttribute(`checked`);
-      this.getElement().querySelector(`#sort-${sortType}`).setAttribute(`checked`, `checked`);
+      this.getElement().querySelector(`#sort-${sortType}`).checked = true;
       this._currentSortType = sortType;
 
       handler(this._currentSortType);
     });
+  }
+
+  setDefaultSortType() {
+    this.getElement().querySelector(`#sort-${SortType.EVENT}`).checked = true;
+    this._currentSortType = SortType.EVENT;
   }
 }
