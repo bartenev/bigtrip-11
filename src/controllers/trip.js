@@ -6,6 +6,7 @@ import DayComponent from "../components/day.js";
 import EventsListComponent from "../components/events-list.js";
 import {SortType} from "../components/sort.js";
 import EventController, {EmptyEvent, Mode as EventControllerMode} from "./event.js";
+import {FilterType} from "../const";
 
 const getUniqueDays = (listOfEvent) => {
   let days = [];
@@ -104,6 +105,9 @@ export default class TripController {
     if (this._creatingTask) {
       return;
     }
+    this._onViewChange();
+    this._sortType = SortType.EVENT;
+    this._eventsModel.setFilter(FilterType.EVERYTHING);
     this._creatingTask = new EventController(this._sortComponent.getElement(), this._destinationsModel, this._offersModel, this._onDataChange, this._onViewChange);
     this._creatingTask.render(EmptyEvent, EventControllerMode.ADDING);
   }
@@ -159,16 +163,17 @@ export default class TripController {
 
   _onDataChange(eventController, oldData, newData, isClose = true) {
     if (oldData === EmptyEvent) {
-      console.log(`добавление`);
       this._creatingTask = null;
       if (newData === null) {
         eventController.destroy();
         this._updateEvents(this._sortType);
+        console.log(`добавление - удаление`);
       } else {
         this._eventsModel.addEvent(newData);
         // eventController.render(newData, EventControllerMode.DEFAULT);
         this._eventsControllers = [].concat(eventController, this._eventsControllers);
         this._updateEvents(this._sortType);
+        console.log(`добавление`);
       }
     } else if (newData === null) {
       console.log(`удаление`);
@@ -178,7 +183,6 @@ export default class TripController {
     } else {
       console.log(`редактирование`);
 
-      // const eventController = this._eventsControllers.find((it) => it._eventComponent._event === oldData);
       const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
       if (isSuccess) {
         eventController.render(newData, EventControllerMode.DEFAULT);
@@ -190,6 +194,10 @@ export default class TripController {
   }
 
   _onViewChange() {
+    if (this._creatingTask) {
+      this._creatingTask.destroy();
+      this._creatingTask = null;
+    }
     this._eventsControllers.forEach((it) => it.setDefaultView());
   }
 
