@@ -63,7 +63,6 @@ export default class EventController {
     this._eventEditComponent.setRemoveHandler((evt) => {
       evt.preventDefault();
       this._onDataChange(this, event, null);
-      // this._replaceEditToEvent();
     });
 
     this._eventEditComponent.setFavoriteButtonClickHandler(() => {
@@ -73,8 +72,13 @@ export default class EventController {
     });
 
     this._eventEditComponent.setCloseButtonClickHandler(() => {
-      this._eventEditComponent.reset();
-      this._replaceEditToEvent();
+      if (this._mode === Mode.ADDING) {
+        this._onDataChange(this, event, null);
+        console.log(``);
+      } else {
+        this._eventEditComponent.reset();
+        this._replaceEditToEvent();
+      }
     });
 
     switch (mode) {
@@ -87,9 +91,9 @@ export default class EventController {
         }
         break;
       case Mode.ADDING:
-        // if (oldTaskEditComponent && oldTaskComponent) {
-        //   remove(oldTaskComponent);
-        //   remove(oldTaskEditComponent);
+        // if (oldEventEditComponent && oldEventComponent) {
+        //   remove(oldEventComponent);
+        //   remove(oldEventEditComponent);
         // }
 
         document.addEventListener(`keydown`, this._onEscKeyDown);
@@ -122,7 +126,7 @@ export default class EventController {
 
     if (document.contains(this._eventEditComponent.getElement())) {
       replace(this._eventComponent, this._eventEditComponent);
-      console.log(111);
+      console.log(`event - replace edit to event`);
     }
 
     this._mode = Mode.DEFAULT;
@@ -132,7 +136,12 @@ export default class EventController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
+
+      if (this._mode === Mode.ADDING) {
+        this._onDataChange(this, EmptyEvent, null);
+      }
       this._replaceEditToEvent();
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
 
