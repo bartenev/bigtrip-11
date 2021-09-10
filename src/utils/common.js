@@ -1,10 +1,4 @@
-// import {MONTH_NAMES} from "../const.js";
 import moment from "moment";
-
-const MILLISECONDS_PER_SECOND = 1000;
-const SECONDS_PER_MINUTE = 60;
-const MINUTES_PER_HOUR = 60;
-const HOURS_PER_DAY = 24;
 
 const castTimeFormat = (value) => {
   const time = value < 10 ? `0${value}` : String(value);
@@ -16,42 +10,18 @@ const formatTimeDD = (date) => {
 };
 
 const formatTimeMMM = (date) => {
-  // const month = MONTH_NAMES[value].slice(0, 3);
-  // return `${month}`;
   return moment(date).format(`MMM`);
 };
 
 const formatTimeEditEvent = (date) => {
-  // const day = castTimeFormat(date.getDate());
-  // const month = castTimeFormat(date.getMonth() + 1);
-  // const year = castTimeFormat(date.getFullYear() % 100);
-  // const hours = castTimeFormat(date.getHours());
-  // const minutes = castTimeFormat(date.getMinutes());
-  //
-  // return `${day}/${month}/${year} ${hours}:${minutes}`;
   return moment(date).format(`DD/MM/YY HH:mm`);
 };
 
 const formatTimeEvent = (date) => {
-  // const hours = castTimeFormat(date.getHours() % 12);
-  // const minutes = castTimeFormat(date.getMinutes());
-  //
-  // return `${hours}:${minutes}`;
   return moment(date).format(`HH:mm`);
 };
 
 const formatTimeDateTime = (date, isOnlyYMD = false) => {
-  // const day = castTimeFormat(date.getDate());
-  // const month = castTimeFormat(date.getMonth() + 1);
-  // const year = castTimeFormat(date.getFullYear());
-  // const hours = castTimeFormat(date.getHours());
-  // const minutes = castTimeFormat(date.getMinutes());
-  //
-  // let dateTime = `${year}-${month}-${day}`;
-  //
-  // if (!isOnlyYMD) {
-  //   dateTime += `T${hours}:${minutes}`;
-  // }
   let dateTime = ``;
 
   if (isOnlyYMD) {
@@ -64,10 +34,6 @@ const formatTimeDateTime = (date, isOnlyYMD = false) => {
 };
 
 const formatTimeMD = (date) => {
-  // const day = castTimeFormat(date.getDate());
-  // const month = MONTH_NAMES[date.getMonth()].slice(0, 3);
-  //
-  // return `${month} ${day}`;
   return moment(date).format(`MMM DD`);
 };
 

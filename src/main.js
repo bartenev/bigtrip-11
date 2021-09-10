@@ -10,6 +10,9 @@ import FilterController from "./controllers/filter";
 import {render, RenderPosition} from "./utils/render";
 import TripController from "./controllers/trip";
 import NewEventButtonComponent from "./components/new-event-button.js";
+import StatisticsComponent from "./components/statistics";
+import TripComponent from "./components/trip";
+import {SortType} from "./components/sort";
 
 const EVENTS_COUNT = 5;
 
@@ -46,32 +49,35 @@ filterController.render();
 const newEventButtonComponent = new NewEventButtonComponent();
 render(tripMainElement, newEventButtonComponent);
 
-const tripEventsElement = document.querySelector(`.trip-events`);
-const tripController = new TripController(tripEventsElement, eventsModel, destinationsModel, offersModel);
+const mainContainerElement = document.querySelector(`.page-main .page-body__container`);
+
+const tripComponent = new TripComponent();
+render(mainContainerElement, tripComponent);
+const tripController = new TripController(tripComponent, eventsModel, destinationsModel, offersModel);
 tripController.render();
+
+const statisticsComponent = new StatisticsComponent(eventsModel);
+render(mainContainerElement, statisticsComponent);
+statisticsComponent.hide();
 
 newEventButtonComponent.setButtonClickHandler(() => {
   tabsComponent.setActiveItem(TabsItem.TABLE);
-  // statisticsComponent.hide();
-  // boardController.show();
+  statisticsComponent.hide();
+  tripController.show();
   tripController.createTask();
 });
 
-// siteMenuComponent.setOnChange((menuItem) => {
-//   switch (menuItem) {
-//     case MenuItem.NEW_TASK:
-//       siteMenuComponent.setActiveItem(MenuItem.TASKS);
-//       statisticsComponent.hide();
-//       boardController.show();
-//       boardController.createTask();
-//       break;
-//     case MenuItem.STATISTICS:
-//       boardController.hide();
-//       statisticsComponent.show();
-//       break;
-//     case MenuItem.TASKS:
-//       statisticsComponent.hide();
-//       boardController.show();
-//       break;
-//   }
-
+tabsComponent.setOnChange((tabsItem) => {
+  switch (tabsItem) {
+    case TabsItem.STATISTICS:
+      tripController.hide();
+      statisticsComponent.rerender(eventsModel);
+      statisticsComponent.show();
+      break;
+    case TabsItem.TABLE:
+      statisticsComponent.hide();
+      tripController.setSortType(SortType.EVENT);
+      tripController.show();
+      break;
+  }
+});
