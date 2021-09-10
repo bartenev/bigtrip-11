@@ -80,16 +80,25 @@ export default class TripController {
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
+  hide() {
+    this._container.hide();
+  }
+
+  show() {
+    this._container.show();
+  }
+
   render() {
     const events = this._eventsModel.getEvents();
+    const container = this._container.getElement();
 
     if (!events.length) {
       this._renderNoPointsElement();
       return;
     }
 
-    render(this._container, this._sortComponent);
-    render(this._container, this._daysListComponent);
+    render(container, this._sortComponent);
+    render(container, this._daysListComponent);
 
     const tripDaysListElement = this._daysListComponent.getElement();
 
@@ -112,12 +121,17 @@ export default class TripController {
     this._creatingTask.render(EmptyEvent, EventControllerMode.ADDING);
   }
 
+  setSortType(sortType) {
+    this._sortType = sortType;
+    this._sortComponent.setDefaultSortType();
+    this._updateEvents(this._sortType);
+  }
+
   _renderNoPointsElement() {
-    render(this._container, this._noPointsComponent);
+    render(this._container.getElement(), this._noPointsComponent);
   }
 
   _renderEvents(events, sortType) {
-
     if (!events.length) {
       this._renderNoPointsElement();
     } else if (document.contains(this._noPointsComponent.getElement())) {
@@ -167,22 +181,16 @@ export default class TripController {
       if (newData === null) {
         eventController.destroy();
         this._updateEvents(this._sortType);
-        console.log(`добавление - удаление`);
       } else {
         this._eventsModel.addEvent(newData);
         // eventController.render(newData, EventControllerMode.DEFAULT);
         this._eventsControllers = [].concat(eventController, this._eventsControllers);
         this._updateEvents(this._sortType);
-        console.log(`добавление`);
       }
     } else if (newData === null) {
-      console.log(`удаление`);
-
       this._eventsModel.removeEvent(oldData.id);
       this._updateEvents(this._sortType);
     } else {
-      console.log(`редактирование`);
-
       const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
       if (isSuccess) {
         eventController.render(newData, EventControllerMode.DEFAULT);
