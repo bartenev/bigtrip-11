@@ -2,7 +2,7 @@ import {FilterType} from "../const";
 import {getEventsByFilter} from "../utils/filter";
 export default class Events {
   constructor() {
-    this._events = null;
+    this._events = [];
     this._activeFilterType = FilterType.EVERYTHING;
 
     this._dataChangeHandlers = [];

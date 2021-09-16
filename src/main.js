@@ -1,44 +1,45 @@
-import {generateEvents, destinations, offers} from "./mock/waypoint.js";
-import EventsModel from "./models/events.js";
+import API from "./api";
 import DestinationsModel from "./models/destinations.js";
-import OffersModel from "./models/offers";
+import EventsModel from "./models/events.js";
+import FilterController from "./controllers/filter";
 import InfoComponent from './components/info.js';
 import InfoMainComponent from './components/info-main.js';
 import InfoCostComponent from './components/info-cost.js';
-import TabsComponent, {TabsItem} from './components/tabs.js';
-import FilterController from "./controllers/filter";
-import {render, RenderPosition} from "./utils/render";
-import TripController from "./controllers/trip";
 import NewEventButtonComponent from "./components/new-event-button.js";
+import OffersModel from "./models/offers";
 import StatisticsComponent from "./components/statistics";
+import TabsComponent, {TabsItem} from './components/tabs.js';
+import TripController from "./controllers/trip";
 import TripComponent from "./components/trip";
+import {generateEvents, destinations} from "./mock/waypoint.js";
+import {render, RenderPosition} from "./utils/render";
 import {SortType} from "./components/sort";
 
-const EVENTS_COUNT = 5;
+const AUTHORIZATION = `Basic dhf;ziofliudgspuf`;
+const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
-const events = generateEvents(EVENTS_COUNT);
+// const EVENTS_COUNT = 20;
 
-// ---------
-const sortEvents = events.sort((firstEvent, secondEvent) => (firstEvent.dateFrom - secondEvent.dateFrom));
-console.log(sortEvents.map((event) => {
-  return event.dateFrom;
-}));
-// ---------
+// const events = generateEvents(EVENTS_COUNT);
 
+const api = new API(END_POINT, AUTHORIZATION);
 const eventsModel = new EventsModel();
-eventsModel.setEvents(events);
-
 const destinationsModel = new DestinationsModel();
+const offersModel = new OffersModel();
+
 destinationsModel.setDestinations(destinations);
 
-const offersModel = new OffersModel();
-offersModel.setOffers(offers);
+// ---------
+// const sortEvents = events.sort((firstEvent, secondEvent) => (firstEvent.dateFrom - secondEvent.dateFrom));
+// console.log(sortEvents.map((event) => {
+//   return event.dateFrom;
+// }));
+// ---------
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoComponent = new InfoComponent();
 render(tripMainElement, tripInfoComponent, RenderPosition.AFTERBEGIN);
-render(tripInfoComponent.getElement(), new InfoMainComponent(eventsModel));
-render(tripInfoComponent.getElement(), new InfoCostComponent(eventsModel));
+
 
 const tripControlsElement = document.querySelector(`.trip-controls`);
 const tabsComponent = new TabsComponent();
@@ -54,7 +55,6 @@ const mainContainerElement = document.querySelector(`.page-main .page-body__cont
 const tripComponent = new TripComponent();
 render(mainContainerElement, tripComponent);
 const tripController = new TripController(tripComponent, eventsModel, destinationsModel, offersModel);
-tripController.render();
 
 const statisticsComponent = new StatisticsComponent(eventsModel);
 render(mainContainerElement, statisticsComponent);
@@ -81,3 +81,21 @@ tabsComponent.setOnChange((tabsItem) => {
       break;
   }
 });
+
+api.getEvents()
+  .then((events) => {
+    console.log(events);
+    eventsModel.setEvents(events);
+    render(tripInfoComponent.getElement(), new InfoMainComponent(eventsModel));
+    render(tripInfoComponent.getElement(), new InfoCostComponent(eventsModel));
+
+    api.getOffers()
+      .then((offers) => {
+        console.log(offers);
+        offersModel.setOffers(offers);
+        tripController.render();
+      });
+
+  });
+
+

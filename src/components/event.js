@@ -2,7 +2,8 @@ import {formatTimeEvent, formatTimeDateTime, formatTimeSubtract} from "../utils/
 import AbstractComponent from "./abstract-component.js";
 
 const createOfferMarkup = (offers) => {
-  return offers.filter((offer) => offer.isChecked === true).slice(0, 3).map((offer) => {
+  // return offers.filter((offer) => offer.isChecked === true).slice(0, 3).map((offer) => {
+  return offers.slice(0, 3).map((offer) => {
     const {title, price} = offer;
     return (
       `<li class="event__offer">

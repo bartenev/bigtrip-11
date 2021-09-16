@@ -74,7 +74,6 @@ export default class EventController {
     this._eventEditComponent.setCloseButtonClickHandler(() => {
       if (this._mode === Mode.ADDING) {
         this._onDataChange(this, event, null);
-        console.log(``);
       } else {
         this._eventEditComponent.reset();
         this._replaceEditToEvent();
@@ -126,7 +125,6 @@ export default class EventController {
 
     if (document.contains(this._eventEditComponent.getElement())) {
       replace(this._eventComponent, this._eventEditComponent);
-      console.log(`event - replace edit to event`);
     }
 
     this._mode = Mode.DEFAULT;

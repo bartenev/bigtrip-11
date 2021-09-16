@@ -27,10 +27,11 @@ const createDestinationMarkup = (destinations) => {
   }).join(`\n`);
 };
 
-const createOffersMarkup = (offers, id) => {
-  return offers.map((offer) => {
-    const {type, title, price, isChecked} = offer;
-    const checkedInfo = isChecked ? `checked` : ``;
+const createOffersMarkup = (offers, allOffers, id) => {
+  return allOffers.map((offer) => {
+    const {title, price} = offer;
+    const type = title.toLowerCase().replace(/ /g, `-`);
+    const checkedInfo = offers.findIndex((currentOffer) => currentOffer.title === offer.title) !== -1 ? `checked` : ``;
     return (
       `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-${type}" ${checkedInfo}>
@@ -44,8 +45,8 @@ const createOffersMarkup = (offers, id) => {
   }).join(`\n`);
 };
 
-const createOffersTemplate = (offers, id) => {
-  const offersMarkup = createOffersMarkup(offers, id);
+const createOffersTemplate = (offers, allOffers, id) => {
+  const offersMarkup = createOffersMarkup(offers, allOffers, id);
   return (
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -69,18 +70,21 @@ const createPhotosMarkup = (photos) => {
   }).join(`\n`);
 };
 
-const createEventEditTemplate = (event, destinationsModel, options = {}, mode) => {
+const createEventEditTemplate = (event, destinationsModel, offersModel, options = {}, mode) => {
 
   const {id, basePrice, dateFrom, dateTo, isFavorite} = event;
   const {type, destination, offers} = options;
 
+  const allOffers = offersModel.getOffer(type.name);
   const typeEvent = `${type.name[0].toUpperCase() + type.name.slice(1)} ${type.type === `transport` ? `to` : `in`}`;
   const transportEventTypeMarkup = createEventTypeMarkup(WAYPOINT_TYPES, `transport`, type, id);
   const placeEventTypeMarkup = createEventTypeMarkup(WAYPOINT_TYPES, `place`, type, id);
   const dateFromDate = formatTimeEditEvent(dateFrom);
   const dateToDate = formatTimeEditEvent(dateTo);
   const destinationMarkup = createDestinationMarkup(destinationsModel.getDestinations());
-  const offersMarkup = offers.length ? createOffersTemplate(offers, id) : ``;
+
+  const offersMarkup = allOffers ? createOffersTemplate(offers, allOffers, id) : ``;
+
   const photosMarkup = createPhotosMarkup(destination.pictures);
   const favorite = isFavorite ? `checked` : ``;
 
@@ -178,14 +182,17 @@ const createEventEditTemplate = (event, destinationsModel, options = {}, mode) =
 
 const parseFormData = (formData, eventId, destinationsModel, offersModel) => {
   const type = formData.get(`event-type`);
+  const offers = [];
 
-  const offers = offersModel.getOffer(type).offers.slice().map((offer) => {
-    return {
-      type: offer.type,
-      title: offer.title,
-      price: offer.price,
-      isChecked: Boolean(formData.get(`event-offer-${offer.type}`)),
-    };
+  offersModel.getOffer(type).slice().forEach((offer) => {
+    const offerName = offer.title.toLowerCase().replace(/ /g, `-`);
+    const offerData = Boolean(formData.get(`event-offer-${offerName}`));
+    if (offerData) {
+      offers.push({
+        title: offer.title,
+        price: offer.price,
+      });
+    }
   });
 
   return {
@@ -223,7 +230,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, this._destinationsModel, {
+    return createEventEditTemplate(this._event, this._destinationsModel, this._offersModel, {
       destination: this._destination,
       type: this._type,
       offers: this._offers,
