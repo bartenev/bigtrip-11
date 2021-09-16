@@ -30,13 +30,11 @@ export default class API {
   getOffers() {
     return this._load({url: `offers`})
       .then((response) => response.json());
-    // .then(Task.parseTasks);
   }
 
   getDestinations() {
     return this._load({url: `destinations`})
       .then((response) => response.json());
-    // .then(Task.parseTasks);
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

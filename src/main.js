@@ -13,7 +13,6 @@ import StatisticsComponent from "./components/statistics";
 import TabsComponent, {TabsItem} from './components/tabs.js';
 import TripController from "./controllers/trip";
 import TripComponent from "./components/trip";
-import {destinations} from "./mock/waypoint.js";
 import {render, RenderPosition} from "./utils/render";
 import {SortType} from "./components/sort";
 
@@ -25,8 +24,6 @@ const api = new API(END_POINT, AUTHORIZATION);
 const eventsModel = new EventsModel();
 const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
-
-destinationsModel.setDestinations(destinations);
 
 // ---------
 // const sortEvents = events.sort((firstEvent, secondEvent) => (firstEvent.dateFrom - secondEvent.dateFrom));
@@ -87,18 +84,23 @@ api.getEvents()
   .then((events) => {
     console.log(events);
     eventsModel.setEvents(events);
-    render(tripInfoComponent.getElement(), new InfoMainComponent(eventsModel));
-    render(tripInfoComponent.getElement(), new InfoCostComponent(eventsModel));
 
-    api.getOffers()
-      .then((offers) => {
-        console.log(offers);
-        offersModel.setOffers(offers);
-        loadingComponent.getElement().remove();
-        loadingComponent.removeElement();
-        tripController.render();
+    api.getDestinations()
+      .then((destinations) => {
+        destinationsModel.setDestinations(destinations);
+        console.log(destinations);
+
+        api.getOffers()
+          .then((offers) => {
+            console.log(offers);
+            offersModel.setOffers(offers);
+            render(tripInfoComponent.getElement(), new InfoMainComponent(eventsModel));
+            render(tripInfoComponent.getElement(), new InfoCostComponent(eventsModel));
+            loadingComponent.getElement().remove();
+            loadingComponent.removeElement();
+            tripController.render();
+          });
       });
-
   });
 
 

@@ -306,7 +306,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
         if (currentType !== newType) {
           this._type = WAYPOINT_TYPES.find((it) => it.name === newType);
-          this._offers = this._offersModel.getOffer(newType).offers;
+          this._offers = [];
 
           this.rerender();
         }
