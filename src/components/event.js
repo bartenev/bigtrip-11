@@ -37,7 +37,7 @@ const createEventTemplate = (event) => {
   const dateToDate = formatTimeEvent(dateTo);
   const dateToDateTime = formatTimeDateTime(dateTo);
   const duration = formatTimeSubtract(dateFrom, dateTo);
-  const offersMarkup = createOffersMarkup(offers);
+  const offersMarkup = offers ? createOffersMarkup(offers) : ``;
   return (
     `<li class="trip-events__item">
       <div class="event">

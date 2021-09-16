@@ -31,7 +31,10 @@ const createOffersMarkup = (offers, allOffers, id) => {
   return allOffers.map((offer) => {
     const {title, price} = offer;
     const type = title.toLowerCase().replace(/ /g, `-`);
-    const checkedInfo = offers.findIndex((currentOffer) => currentOffer.title === offer.title) !== -1 ? `checked` : ``;
+    let checkedInfo = ``;
+    if (offers) {
+      checkedInfo = offers.findIndex((currentOffer) => currentOffer.title === offer.title) !== -1 ? `checked` : ``;
+    }
     return (
       `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-${type}" ${checkedInfo}>

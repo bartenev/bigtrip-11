@@ -184,10 +184,13 @@ export default class TripController {
         eventController.destroy();
         this._updateEvents(this._sortType);
       } else {
-        this._eventsModel.addEvent(newData);
-        // eventController.render(newData, EventControllerMode.DEFAULT);
-        this._eventsControllers = [].concat(eventController, this._eventsControllers);
-        this._updateEvents(this._sortType);
+        this._api.createEvent(newData)
+          .then((eventModel) => {
+            this._eventsModel.addEvent(eventModel);
+            // eventController.render(newData, EventControllerMode.DEFAULT);
+            this._eventsControllers = [].concat(eventController, this._eventsControllers);
+            this._updateEvents(this._sortType);
+          });
       }
     } else if (newData === null) {
       this._eventsModel.removeEvent(oldData.id);
