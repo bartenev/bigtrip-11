@@ -190,11 +190,20 @@ export default class TripController {
             // eventController.render(newData, EventControllerMode.DEFAULT);
             this._eventsControllers = [].concat(eventController, this._eventsControllers);
             this._updateEvents(this._sortType);
+          })
+          .catch(() => {
+            console.log(`CATCH`);
           });
       }
     } else if (newData === null) {
-      this._eventsModel.removeEvent(oldData.id);
-      this._updateEvents(this._sortType);
+      this._api.deleteEvent(oldData.id)
+        .then(() => {
+          this._eventsModel.removeEvent(oldData.id);
+          this._updateEvents(this._sortType);
+        })
+        .catch(() => {
+          console.log(`CATCH`);
+        });
     } else {
       this._api.updateEvent(oldData.id, newData)
         .then((eventModel) => {
