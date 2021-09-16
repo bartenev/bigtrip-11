@@ -1,5 +1,6 @@
 import {remove, render} from "../utils/render.js";
-import NoPointsComponent from "../components/no-points.js";
+import Message from "../components/message.js";
+import {MessageText} from "../components/message.js";
 import SortComponent from "../components/sort.js";
 import DaysListComponent from "../components/days-list.js";
 import DayComponent from "../components/day.js";
@@ -69,7 +70,7 @@ export default class TripController {
     this._sortType = SortType.EVENT;
 
     this._container = container;
-    this._noPointsComponent = new NoPointsComponent();
+    this._noPointsComponent = new Message(MessageText.NO_POINTS);
     this._sortComponent = new SortComponent();
     this._daysListComponent = new DaysListComponent();
 

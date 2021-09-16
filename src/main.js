@@ -5,22 +5,21 @@ import FilterController from "./controllers/filter";
 import InfoComponent from './components/info.js';
 import InfoMainComponent from './components/info-main.js';
 import InfoCostComponent from './components/info-cost.js';
+import Message from "./components/message";
+import {MessageText} from "./components/message";
 import NewEventButtonComponent from "./components/new-event-button.js";
 import OffersModel from "./models/offers";
 import StatisticsComponent from "./components/statistics";
 import TabsComponent, {TabsItem} from './components/tabs.js';
 import TripController from "./controllers/trip";
 import TripComponent from "./components/trip";
-import {generateEvents, destinations} from "./mock/waypoint.js";
+import {destinations} from "./mock/waypoint.js";
 import {render, RenderPosition} from "./utils/render";
 import {SortType} from "./components/sort";
 
-const AUTHORIZATION = `Basic dhf;ziofliudgspuf`;
+
+const AUTHORIZATION = `Basic kjsfnfdsvnsfdvn`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
-
-// const EVENTS_COUNT = 20;
-
-// const events = generateEvents(EVENTS_COUNT);
 
 const api = new API(END_POINT, AUTHORIZATION);
 const eventsModel = new EventsModel();
@@ -40,7 +39,6 @@ const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoComponent = new InfoComponent();
 render(tripMainElement, tripInfoComponent, RenderPosition.AFTERBEGIN);
 
-
 const tripControlsElement = document.querySelector(`.trip-controls`);
 const tabsComponent = new TabsComponent();
 render(tripControlsElement, tabsComponent, RenderPosition.AFTERBEGIN);
@@ -55,6 +53,9 @@ const mainContainerElement = document.querySelector(`.page-main .page-body__cont
 const tripComponent = new TripComponent();
 render(mainContainerElement, tripComponent);
 const tripController = new TripController(tripComponent, eventsModel, destinationsModel, offersModel);
+
+const loadingComponent = new Message(MessageText.LOADING);
+render(tripComponent.getElement(), loadingComponent);
 
 const statisticsComponent = new StatisticsComponent(eventsModel);
 render(mainContainerElement, statisticsComponent);
@@ -93,6 +94,8 @@ api.getEvents()
       .then((offers) => {
         console.log(offers);
         offersModel.setOffers(offers);
+        loadingComponent.getElement().remove();
+        loadingComponent.removeElement();
         tripController.render();
       });
 
