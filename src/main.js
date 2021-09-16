@@ -49,7 +49,7 @@ const mainContainerElement = document.querySelector(`.page-main .page-body__cont
 
 const tripComponent = new TripComponent();
 render(mainContainerElement, tripComponent);
-const tripController = new TripController(tripComponent, eventsModel, destinationsModel, offersModel);
+const tripController = new TripController(tripComponent, eventsModel, destinationsModel, offersModel, api);
 
 const loadingComponent = new Message(MessageText.LOADING);
 render(tripComponent.getElement(), loadingComponent);

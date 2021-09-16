@@ -14,13 +14,14 @@ export default class Event {
 
   toRAW() {
     return {
+      "base_price": this.basePrice,
+      "date_from": this.dateFrom.toISOString(),
+      "date_to": this.dateTo.toISOString(),
+      "destination": this.destination,
       "id": this.id,
-      "description": this.description,
-      "due_date": this.dueDate ? this.dueDate.toISOString() : null,
-      "repeating_days": this.repeatingDays,
-      "color": this.color,
       "is_favorite": this.isFavorite,
-      "is_archived": this.isArchive,
+      "offers": this.offers,
+      "type": this.type.name,
     };
   }
 

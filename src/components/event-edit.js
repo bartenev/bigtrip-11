@@ -1,5 +1,5 @@
 import {WAYPOINT_TYPES} from "../const.js";
-import {formatTimeEditEvent, parseDate} from "../utils/common.js";
+import {formatTimeEditEvent} from "../utils/common.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
@@ -180,33 +180,6 @@ const createEventEditTemplate = (event, destinationsModel, offersModel, options 
   );
 };
 
-const parseFormData = (formData, eventId, destinationsModel, offersModel) => {
-  const type = formData.get(`event-type`);
-  const offers = [];
-
-  offersModel.getOffer(type).slice().forEach((offer) => {
-    const offerName = offer.title.toLowerCase().replace(/ /g, `-`);
-    const offerData = Boolean(formData.get(`event-offer-${offerName}`));
-    if (offerData) {
-      offers.push({
-        title: offer.title,
-        price: offer.price,
-      });
-    }
-  });
-
-  return {
-    basePrice: Number(formData.get(`event-price`)),
-    dateFrom: parseDate(formData.get(`event-start-time`)),
-    dateTo: parseDate(formData.get(`event-end-time`)),
-    destination: destinationsModel.getDestination(formData.get(`event-destination`)),
-    id: eventId,
-    isFavorite: Boolean(formData.get(`event-favorite`)),
-    offers,
-    type: WAYPOINT_TYPES.find((it) => it.name === type),
-  };
-};
-
 export default class EventEdit extends AbstractSmartComponent {
   constructor(event, destinationsModel, offersModel, mode) {
     super();
@@ -263,14 +236,18 @@ export default class EventEdit extends AbstractSmartComponent {
   getData() {
     const form = this.getElement();
     const formData = new FormData(form);
+    return formData;
+  }
 
-    const data = parseFormData(formData, this._event.id, this._destinationsModel, this._offersModel);
+  isValidData(data) {
+    const dateToElement = this.getElement().querySelector(`#event-end-time-${data.id}`);
+    const basePriceElement = this.getElement().querySelector(`#event-price-${data.id}`);
+    const destinationElement = this.getElement().querySelector(`#event-destination-${data.id}`);
 
-    if (this._isValidData(data)) {
-      return data;
-    }
-
-    return null;
+    let isValid = this._disabledSubmitButton(dateToElement, data.dateFrom < data.dateTo);
+    isValid = this._disabledSubmitButton(basePriceElement, !!data.basePrice) && isValid;
+    isValid = this._disabledSubmitButton(destinationElement, this._destinationsModel.isNameValid(destinationElement.value)) && isValid;
+    return isValid;
   }
 
   recoveryListeners() {
@@ -323,17 +300,6 @@ export default class EventEdit extends AbstractSmartComponent {
           this._disabledSubmitButton(evt.target, this._destinationsModel.isNameValid(newDestination));
         }
       });
-  }
-
-  _isValidData(data) {
-    const dateToElement = this.getElement().querySelector(`#event-end-time-${data.id}`);
-    const basePriceElement = this.getElement().querySelector(`#event-price-${data.id}`);
-    const destinationElement = this.getElement().querySelector(`#event-destination-${data.id}`);
-
-    let isValid = this._disabledSubmitButton(dateToElement, data.dateFrom < data.dateTo);
-    isValid = this._disabledSubmitButton(basePriceElement, !!data.basePrice) && isValid;
-    isValid = this._disabledSubmitButton(destinationElement, this._destinationsModel.isNameValid(destinationElement.value)) && isValid;
-    return isValid;
   }
 
   _disabledSubmitButton(element, value) {

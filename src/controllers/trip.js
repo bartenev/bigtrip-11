@@ -60,10 +60,11 @@ const renderEventsOfOneDay = (date, dayIndex, events, destinationsModel, offersM
 };
 
 export default class TripController {
-  constructor(container, eventsModel, destinationsModel, offersModel) {
+  constructor(container, eventsModel, destinationsModel, offersModel, api) {
     this._eventsModel = eventsModel;
     this._destinationsModel = destinationsModel;
     this._offersModel = offersModel;
+    this._api = api;
     this._eventsControllers = [];
     this._creatingTask = null;
 
@@ -192,13 +193,20 @@ export default class TripController {
       this._eventsModel.removeEvent(oldData.id);
       this._updateEvents(this._sortType);
     } else {
-      const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
-      if (isSuccess) {
-        eventController.render(newData, EventControllerMode.DEFAULT);
-        if (isClose) {
-          this._updateEvents(this._sortType);
-        }
-      }
+      this._api.updateEvent(oldData.id, newData)
+        .then((eventModel) => {
+          const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
+
+          if (isSuccess) {
+            eventController.render(eventModel, EventControllerMode.DEFAULT);
+            if (isClose) {
+              this._updateEvents(this._sortType);
+            }
+          }
+        })
+        .catch(() => {
+          console.log(`CATCH`);
+        });
     }
   }
 
