@@ -90,13 +90,18 @@ export default class EventController {
       const data = parseFormData(formData, this._event.id, this._destinationsModel, this._offersModel);
 
       if (this._eventEditComponent.isValidData(data)) {
+        this._eventEditComponent.setData({
+          saveButtonText: `Saving...`,
+        });
         this._onDataChange(this, event, data);
-        this._replaceEditToEvent();
       }
     });
 
     this._eventEditComponent.setRemoveHandler((evt) => {
       evt.preventDefault();
+      this._eventEditComponent.setData({
+        deleteButtonText: `Deleting...`,
+      });
       this._onDataChange(this, event, null);
     });
 
@@ -149,6 +154,11 @@ export default class EventController {
     setTimeout(() => {
       this._eventComponent.getElement().classList.remove(`shake`);
       this._eventEditComponent.getElement().classList.remove(`shake`);
+
+      this._eventEditComponent.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+      });
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 

@@ -5,6 +5,12 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import {Mode as EventControllerMode} from "../controllers/event";
 
+const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+  cancelButtonText: `Cancel`,
+};
+
 const createEventTypeMarkup = (types, kindOfEventType, currentType, id) => {
   return types.filter((type) => type.type === kindOfEventType).map((type) => {
     const {name} = type;
@@ -76,7 +82,7 @@ const createPhotosMarkup = (photos) => {
 const createEventEditTemplate = (event, destinationsModel, offersModel, options = {}, mode) => {
 
   const {id, basePrice, dateFrom, dateTo, isFavorite} = event;
-  const {type, destination, offers} = options;
+  const {type, destination, offers, externalData} = options;
 
   const allOffers = offersModel.getOffer(type.name);
   const typeEvent = `${type.name[0].toUpperCase() + type.name.slice(1)} ${type.type === `transport` ? `to` : `in`}`;
@@ -92,6 +98,16 @@ const createEventEditTemplate = (event, destinationsModel, offersModel, options 
   const favorite = isFavorite ? `checked` : ``;
 
   const isDefaultMode = mode === EventControllerMode.DEFAULT;
+
+  const deleteButtonText = isDefaultMode ? externalData.deleteButtonText : externalData.cancelButtonText;
+  const saveButtonText = externalData.saveButtonText;
+
+  let disabledButton = ``;
+
+  if ((deleteButtonText !== DefaultData.deleteButtonText && deleteButtonText !== DefaultData.cancelButtonText) ||
+  saveButtonText !== DefaultData.saveButtonText) {
+    disabledButton = `disabled`;
+  }
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -147,8 +163,8 @@ const createEventEditTemplate = (event, destinationsModel, offersModel, options 
           <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${isDefaultMode ? `Delete` : `Cancel`}</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${disabledButton}>${saveButtonText}</button>
+        <button class="event__reset-btn" type="reset" ${disabledButton}>${deleteButtonText}</button>
         ${isDefaultMode ?
       `<input id="event-favorite-${id}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${favorite}>
       <label class="event__favorite-btn" for="event-favorite-${id}">
@@ -195,6 +211,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._type = this._event.type;
     this._offers = this._event.offers;
     this._destination = this._event.destination;
+    this._externalData = DefaultData;
 
     this._submitHandler = null;
     this._removeButtonClickHandler = null;
@@ -210,6 +227,7 @@ export default class EventEdit extends AbstractSmartComponent {
       destination: this._destination,
       type: this._type,
       offers: this._offers,
+      externalData: this._externalData,
     }, this._mode);
   }
 
@@ -238,8 +256,12 @@ export default class EventEdit extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement();
-    const formData = new FormData(form);
-    return formData;
+    return new FormData(form);
+  }
+
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
   }
 
   isValidData(data) {
