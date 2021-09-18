@@ -192,7 +192,7 @@ export default class TripController {
             this._updateEvents(this._sortType);
           })
           .catch(() => {
-            console.log(`CATCH`);
+            eventController.shake();
           });
       }
     } else if (newData === null) {
@@ -202,7 +202,7 @@ export default class TripController {
           this._updateEvents(this._sortType);
         })
         .catch(() => {
-          console.log(`CATCH`);
+          eventController.shake();
         });
     } else {
       this._api.updateEvent(oldData.id, newData)
@@ -217,7 +217,7 @@ export default class TripController {
           }
         })
         .catch(() => {
-          console.log(`CATCH`);
+          eventController.shake();
         });
     }
   }

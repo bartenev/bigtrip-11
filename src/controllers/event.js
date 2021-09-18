@@ -5,6 +5,8 @@ import EventEditComponent from "../components/event-edit.js";
 import {WAYPOINT_TYPES} from "../const";
 import {parseDate} from "../utils/common";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
@@ -138,6 +140,16 @@ export default class EventController {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
     }
+  }
+
+  shake() {
+    this._eventComponent.getElement().classList.add(`shake`);
+    this._eventEditComponent.getElement().classList.add(`shake`);
+
+    setTimeout(() => {
+      this._eventComponent.getElement().classList.remove(`shake`);
+      this._eventEditComponent.getElement().classList.remove(`shake`);
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   destroy() {
