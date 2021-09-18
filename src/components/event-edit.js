@@ -1,5 +1,5 @@
 import {WAYPOINT_TYPES} from "../const.js";
-import {formatTimeEditEvent} from "../utils/common.js";
+import {formatTimeEditEvent, parseDate} from "../utils/common.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
@@ -43,7 +43,12 @@ const createOffersMarkup = (offers, allOffers, id) => {
     }
     return (
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-${type}" ${checkedInfo}>
+        <input class="event__offer-checkbox  visually-hidden"
+        id="event-offer-${type}-${id}"
+        type="checkbox"
+        name="event-offer-${type}"
+        value="${title}"
+        ${checkedInfo}>
         <label class="event__offer-label" for="event-offer-${type}-${id}">
           <span class="event__offer-title">${title}</span>
           &plus;
@@ -81,8 +86,8 @@ const createPhotosMarkup = (photos) => {
 
 const createEventEditTemplate = (event, destinationsModel, offersModel, options = {}, mode) => {
 
-  const {id, basePrice, dateFrom, dateTo, isFavorite} = event;
-  const {type, destination, offers, externalData} = options;
+  const {id, isFavorite} = event;
+  const {type, destination, offers, basePrice, dateFrom, dateTo, externalData} = options;
 
   const allOffers = offersModel.getOffer(type.name);
   const typeEvent = `${type.name[0].toUpperCase() + type.name.slice(1)} ${type.type === `transport` ? `to` : `in`}`;
@@ -93,7 +98,6 @@ const createEventEditTemplate = (event, destinationsModel, offersModel, options 
   const destinationMarkup = createDestinationMarkup(destinationsModel.getDestinations());
 
   const offersMarkup = allOffers ? createOffersTemplate(offers, allOffers, id) : ``;
-
   const photosMarkup = createPhotosMarkup(destination.pictures);
   const favorite = isFavorite ? `checked` : ``;
 
@@ -211,6 +215,9 @@ export default class EventEdit extends AbstractSmartComponent {
     this._type = this._event.type;
     this._offers = this._event.offers;
     this._destination = this._event.destination;
+    this._basePrice = this._event.basePrice;
+    this._dateFrom = this._event.dateFrom;
+    this._dateTo = this._event.dateTo;
     this._externalData = DefaultData;
 
     this._submitHandler = null;
@@ -228,6 +235,9 @@ export default class EventEdit extends AbstractSmartComponent {
       type: this._type,
       offers: this._offers,
       externalData: this._externalData,
+      basePrice: this._basePrice,
+      dateFrom: this._dateFrom,
+      dateTo: this._dateTo,
     }, this._mode);
   }
 
@@ -288,6 +298,9 @@ export default class EventEdit extends AbstractSmartComponent {
     this._destination = event.destination;
     this._type = event.type;
     this._offers = event.offers;
+    this._basePrice = event.basePrice;
+    this._dateFrom = event.dateFrom;
+    this._dateTo = event.dateTo;
 
     this.rerender();
   }
@@ -323,6 +336,40 @@ export default class EventEdit extends AbstractSmartComponent {
           this.rerender();
         } else {
           this._disabledSubmitButton(evt.target, this._destinationsModel.isNameValid(newDestination));
+        }
+      });
+
+    element.querySelector(`.event__input--price`)
+      .addEventListener(`change`, (evt) => {
+        this._basePrice = evt.target.value;
+      });
+
+    element.querySelector(`#event-start-time-${this._event.id}`)
+      .addEventListener(`change`, (evt) => {
+        this._dateFrom = parseDate(evt.target.value);
+      });
+
+    element.querySelector(`#event-end-time-${this._event.id}`)
+      .addEventListener(`change`, (evt) => {
+        this._dateTo = parseDate(evt.target.value);
+      });
+
+    element.querySelector(`.event__section--offers`)
+      .addEventListener(`click`, (evt) => {
+        if (evt.target.tagName === `INPUT`) {
+          const checkedOffers = Array.from(this.getElement().querySelectorAll(`.event__offer-checkbox`)).filter((offer) => offer.checked === true);
+          const allOffers = this._offersModel.getOffer(this._type.name);
+          const offers = [];
+
+          checkedOffers.forEach((checkedOffer) => {
+            const addedOffer = allOffers.find((offer) => offer.title === checkedOffer.value);
+
+            if (addedOffer) {
+              offers.push(addedOffer);
+            }
+          });
+
+          this._offers = offers;
         }
       });
   }
