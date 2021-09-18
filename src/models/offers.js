@@ -12,6 +12,6 @@ export default class Offers {
   }
 
   getOffer(name) {
-    return this._offers.find((it) => it.type.name === name);
+    return this._offers.find((it) => it.type === name).offers;
   }
 }

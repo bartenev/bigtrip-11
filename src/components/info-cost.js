@@ -1,10 +1,15 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 
 const getTotalCost = (events) => {
-  return events.reduce((sumEvents, event) => {
-    return sumEvents + event.basePrice + event.offers.reduce((sumOffers, offer) => {
-      return sumOffers + (offer.isChecked ? offer.price : 0);
-    }, 0);
+  return events.reduce((acc, event) => {
+    const sumEvents = acc + event.basePrice;
+    let sumOffers = 0;
+    if (event.offers) {
+      sumOffers = event.offers.reduce((acc2, offer) => {
+        return acc2 + offer.price;
+      }, 0);
+    }
+    return sumEvents + sumOffers;
   }, 0);
 };
 

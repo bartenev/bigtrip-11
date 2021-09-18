@@ -1,5 +1,5 @@
 import {WAYPOINT_TYPES} from "../const.js";
-import {formatTimeEditEvent, parseDate} from "../utils/common.js";
+import {formatTimeEditEvent} from "../utils/common.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
@@ -27,10 +27,11 @@ const createDestinationMarkup = (destinations) => {
   }).join(`\n`);
 };
 
-const createOffersMarkup = (offers, id) => {
-  return offers.map((offer) => {
-    const {type, title, price, isChecked} = offer;
-    const checkedInfo = isChecked ? `checked` : ``;
+const createOffersMarkup = (offers, allOffers, id) => {
+  return allOffers.map((offer) => {
+    const {title, price} = offer;
+    const type = title.toLowerCase().replace(/ /g, `-`);
+    const checkedInfo = offers.findIndex((currentOffer) => currentOffer.title === offer.title) !== -1 ? `checked` : ``;
     return (
       `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-${type}" ${checkedInfo}>
@@ -44,8 +45,8 @@ const createOffersMarkup = (offers, id) => {
   }).join(`\n`);
 };
 
-const createOffersTemplate = (offers, id) => {
-  const offersMarkup = createOffersMarkup(offers, id);
+const createOffersTemplate = (offers, allOffers, id) => {
+  const offersMarkup = createOffersMarkup(offers, allOffers, id);
   return (
     `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -69,18 +70,21 @@ const createPhotosMarkup = (photos) => {
   }).join(`\n`);
 };
 
-const createEventEditTemplate = (event, destinationsModel, options = {}, mode) => {
+const createEventEditTemplate = (event, destinationsModel, offersModel, options = {}, mode) => {
 
   const {id, basePrice, dateFrom, dateTo, isFavorite} = event;
   const {type, destination, offers} = options;
 
+  const allOffers = offersModel.getOffer(type.name);
   const typeEvent = `${type.name[0].toUpperCase() + type.name.slice(1)} ${type.type === `transport` ? `to` : `in`}`;
   const transportEventTypeMarkup = createEventTypeMarkup(WAYPOINT_TYPES, `transport`, type, id);
   const placeEventTypeMarkup = createEventTypeMarkup(WAYPOINT_TYPES, `place`, type, id);
   const dateFromDate = formatTimeEditEvent(dateFrom);
   const dateToDate = formatTimeEditEvent(dateTo);
   const destinationMarkup = createDestinationMarkup(destinationsModel.getDestinations());
-  const offersMarkup = offers.length ? createOffersTemplate(offers, id) : ``;
+
+  const offersMarkup = allOffers ? createOffersTemplate(offers, allOffers, id) : ``;
+
   const photosMarkup = createPhotosMarkup(destination.pictures);
   const favorite = isFavorite ? `checked` : ``;
 
@@ -176,30 +180,6 @@ const createEventEditTemplate = (event, destinationsModel, options = {}, mode) =
   );
 };
 
-const parseFormData = (formData, eventId, destinationsModel, offersModel) => {
-  const type = formData.get(`event-type`);
-
-  const offers = offersModel.getOffer(type).offers.slice().map((offer) => {
-    return {
-      type: offer.type,
-      title: offer.title,
-      price: offer.price,
-      isChecked: Boolean(formData.get(`event-offer-${offer.type}`)),
-    };
-  });
-
-  return {
-    basePrice: Number(formData.get(`event-price`)),
-    dateFrom: parseDate(formData.get(`event-start-time`)),
-    dateTo: parseDate(formData.get(`event-end-time`)),
-    destination: destinationsModel.getDestination(formData.get(`event-destination`)),
-    id: eventId,
-    isFavorite: Boolean(formData.get(`event-favorite`)),
-    offers,
-    type: WAYPOINT_TYPES.find((it) => it.name === type),
-  };
-};
-
 export default class EventEdit extends AbstractSmartComponent {
   constructor(event, destinationsModel, offersModel, mode) {
     super();
@@ -223,7 +203,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, this._destinationsModel, {
+    return createEventEditTemplate(this._event, this._destinationsModel, this._offersModel, {
       destination: this._destination,
       type: this._type,
       offers: this._offers,
@@ -256,14 +236,18 @@ export default class EventEdit extends AbstractSmartComponent {
   getData() {
     const form = this.getElement();
     const formData = new FormData(form);
+    return formData;
+  }
 
-    const data = parseFormData(formData, this._event.id, this._destinationsModel, this._offersModel);
+  isValidData(data) {
+    const dateToElement = this.getElement().querySelector(`#event-end-time-${data.id}`);
+    const basePriceElement = this.getElement().querySelector(`#event-price-${data.id}`);
+    const destinationElement = this.getElement().querySelector(`#event-destination-${data.id}`);
 
-    if (this._isValidData(data)) {
-      return data;
-    }
-
-    return null;
+    let isValid = this._disabledSubmitButton(dateToElement, data.dateFrom < data.dateTo);
+    isValid = this._disabledSubmitButton(basePriceElement, !!data.basePrice) && isValid;
+    isValid = this._disabledSubmitButton(destinationElement, this._destinationsModel.isNameValid(destinationElement.value)) && isValid;
+    return isValid;
   }
 
   recoveryListeners() {
@@ -299,7 +283,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
         if (currentType !== newType) {
           this._type = WAYPOINT_TYPES.find((it) => it.name === newType);
-          this._offers = this._offersModel.getOffer(newType).offers;
+          this._offers = [];
 
           this.rerender();
         }
@@ -316,17 +300,6 @@ export default class EventEdit extends AbstractSmartComponent {
           this._disabledSubmitButton(evt.target, this._destinationsModel.isNameValid(newDestination));
         }
       });
-  }
-
-  _isValidData(data) {
-    const dateToElement = this.getElement().querySelector(`#event-end-time-${data.id}`);
-    const basePriceElement = this.getElement().querySelector(`#event-price-${data.id}`);
-    const destinationElement = this.getElement().querySelector(`#event-destination-${data.id}`);
-
-    let isValid = this._disabledSubmitButton(dateToElement, data.dateFrom < data.dateTo);
-    isValid = this._disabledSubmitButton(basePriceElement, !!data.basePrice) && isValid;
-    isValid = this._disabledSubmitButton(destinationElement, this._destinationsModel.isNameValid(destinationElement.value)) && isValid;
-    return isValid;
   }
 
   _disabledSubmitButton(element, value) {
