@@ -1,4 +1,5 @@
 import Event from "../models/event";
+import {nanoid} from "nanoid";
 
 const isOnline = () => {
   return window.navigator.onLine;
@@ -63,19 +64,24 @@ export default class Provider {
   createEvent(data) {
     if (isOnline()) {
       return this._api.createEvent(data)
-        .then((event) => {
-          this._storage.setItems(event);
+        .then((newEvent) => {
+          this._storage.setItem(newEvent.id, newEvent.toRAW(), `events`);
 
-          return event;
+          return newEvent;
         });
     }
+    const localEventNewId = nanoid();
+    const localEvent = Event.clone(Object.assign(data, {id: localEventNewId}));
+    this._storage.setItem(localEventNewId, localEvent.toRAW(), `events`);
+
+    return Promise.resolve(localEvent);
   }
 
   updateEvent(id, data) {
     if (isOnline()) {
       return this._api.updateEvent(id, data)
         .then((newEvent) => {
-          this._storage.setItem(newEvent.id, data.toRAW(), `events`);
+          this._storage.setItem(newEvent.id, newEvent.toRAW(), `events`);
 
           return newEvent;
         });

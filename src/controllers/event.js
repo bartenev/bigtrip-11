@@ -18,7 +18,6 @@ export const EmptyEvent = {
   dateFrom: new Date().setHours(0, 0, 0),
   dateTo: new Date().setHours(0, 0, 1),
   destination: ``,
-  id: String(Math.random()).replace(`.`, ``),
   isFavorite: false,
   offers: [],
   type: WAYPOINT_TYPES[0],
