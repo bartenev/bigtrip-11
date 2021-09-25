@@ -354,24 +354,28 @@ export default class EventEdit extends AbstractSmartComponent {
         this._dateTo = parseDate(evt.target.value);
       });
 
-    element.querySelector(`.event__section--offers`)
-      .addEventListener(`click`, (evt) => {
-        if (evt.target.tagName === `INPUT`) {
-          const checkedOffers = Array.from(this.getElement().querySelectorAll(`.event__offer-checkbox`)).filter((offer) => offer.checked === true);
-          const allOffers = this._offersModel.getOffer(this._type.name);
-          const offers = [];
+    const offersSection = element.querySelector(`.event__section--offers`);
 
-          checkedOffers.forEach((checkedOffer) => {
-            const addedOffer = allOffers.find((offer) => offer.title === checkedOffer.value);
+    if (offersSection) {
+      element.querySelector(`.event__section--offers`)
+        .addEventListener(`click`, (evt) => {
+          if (evt.target.tagName === `INPUT`) {
+            const checkedOffers = Array.from(this.getElement().querySelectorAll(`.event__offer-checkbox`)).filter((offer) => offer.checked === true);
+            const allOffers = this._offersModel.getOffer(this._type.name);
+            const offers = [];
 
-            if (addedOffer) {
-              offers.push(addedOffer);
-            }
-          });
+            checkedOffers.forEach((checkedOffer) => {
+              const addedOffer = allOffers.find((offer) => offer.title === checkedOffer.value);
 
-          this._offers = offers;
-        }
-      });
+              if (addedOffer) {
+                offers.push(addedOffer);
+              }
+            });
+
+            this._offers = offers;
+          }
+        });
+    }
   }
 
   _disabledSubmitButton(element, value) {

@@ -86,6 +86,7 @@ export default class EventController {
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
+      this._eventEditComponent.getElement().classList.remove(`error`);
       const formData = this._eventEditComponent.getData();
       const data = parseFormData(formData, this._event.id, this._destinationsModel, this._offersModel);
 
@@ -159,6 +160,7 @@ export default class EventController {
         saveButtonText: `Save`,
         deleteButtonText: `Delete`,
       });
+      this._eventEditComponent.getElement().classList.add(`error`);
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 
