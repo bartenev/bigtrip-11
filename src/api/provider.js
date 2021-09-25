@@ -69,8 +69,6 @@ export default class Provider {
           return event;
         });
     }
-
-
   }
 
   updateEvent(id, data) {
@@ -93,10 +91,11 @@ export default class Provider {
     if (isOnline()) {
       return this._api.deleteEvent(id)
         .then(() => {
-          this._storage.removeItem(id);
-
-          return Promise.resolve();
+          this._storage.removeItem(id, `events`);
         });
     }
+
+    this._storage.removeItem(id, `events`);
+    return Promise.resolve();
   }
 }
