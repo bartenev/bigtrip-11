@@ -9,6 +9,7 @@ import Message from "./components/message";
 import {MessageText} from "./components/message";
 import NewEventButtonComponent from "./components/new-event-button.js";
 import OffersModel from "./models/offers";
+import Provider from "./api/provider";
 import StatisticsComponent from "./components/statistics";
 import TabsComponent, {TabsItem} from './components/tabs.js';
 import TripController from "./controllers/trip";
@@ -16,21 +17,14 @@ import TripComponent from "./components/trip";
 import {render, RenderPosition} from "./utils/render";
 import {SortType} from "./components/sort";
 
-
 const AUTHORIZATION = `Basic kjsfnfdsvnsfdvn`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
 const api = new API(END_POINT, AUTHORIZATION);
+const apiWithProvider = new Provider(api);
 const eventsModel = new EventsModel();
 const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
-
-// ---------
-// const sortEvents = events.sort((firstEvent, secondEvent) => (firstEvent.dateFrom - secondEvent.dateFrom));
-// console.log(sortEvents.map((event) => {
-//   return event.dateFrom;
-// }));
-// ---------
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoComponent = new InfoComponent();
@@ -49,7 +43,7 @@ const mainContainerElement = document.querySelector(`.page-main .page-body__cont
 
 const tripComponent = new TripComponent();
 render(mainContainerElement, tripComponent);
-const tripController = new TripController(tripComponent, eventsModel, destinationsModel, offersModel, api);
+const tripController = new TripController(tripComponent, eventsModel, destinationsModel, offersModel, apiWithProvider);
 
 const loadingComponent = new Message(MessageText.LOADING);
 render(tripComponent.getElement(), loadingComponent);
@@ -80,17 +74,17 @@ tabsComponent.setOnChange((tabsItem) => {
   }
 });
 
-api.getEvents()
+apiWithProvider.getEvents()
   .then((events) => {
     console.log(events);
     eventsModel.setEvents(events);
 
-    api.getDestinations()
+    apiWithProvider.getDestinations()
       .then((destinations) => {
         destinationsModel.setDestinations(destinations);
         console.log(destinations);
 
-        api.getOffers()
+        apiWithProvider.getOffers()
           .then((offers) => {
             console.log(offers);
             offersModel.setOffers(offers);
