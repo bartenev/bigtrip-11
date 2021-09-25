@@ -1,4 +1,4 @@
-import API from "./api";
+import API from "./api/index.js";
 import DestinationsModel from "./models/destinations.js";
 import EventsModel from "./models/events.js";
 import FilterController from "./controllers/filter";
@@ -11,17 +11,22 @@ import NewEventButtonComponent from "./components/new-event-button.js";
 import OffersModel from "./models/offers";
 import Provider from "./api/provider";
 import StatisticsComponent from "./components/statistics";
+import Store from "./api/store";
 import TabsComponent, {TabsItem} from './components/tabs.js';
 import TripController from "./controllers/trip";
 import TripComponent from "./components/trip";
 import {render, RenderPosition} from "./utils/render";
 import {SortType} from "./components/sort";
 
-const AUTHORIZATION = `Basic kjsfnfdsvnsfdvn`;
+const AUTHORIZATION = `Basic kjsfnfddsvngfsfdvn`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
+const STORE_PREFIX = `bigtrip-localstorage`;
+const STORE_VER = `v1`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new API(END_POINT, AUTHORIZATION);
-const apiWithProvider = new Provider(api);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 const eventsModel = new EventsModel();
 const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
@@ -97,12 +102,13 @@ apiWithProvider.getEvents()
       });
   });
 
-window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`)
-    .then(() => {
+// window.addEventListener(`load`, () => {
+//   navigator.serviceWorker.register(`/sw.js`)
+//     .then(() => {
+//
+//     }).catch(() => {
+//
+//     });
+// });
 
-    }).catch(() => {
-
-    });
-});
 
