@@ -106,9 +106,9 @@ api.getEvents()
 window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`/sw.js`)
     .then(() => {
-      console.log(`serviceWorker - OK`);
+
     }).catch(() => {
-    console.log(`serviceWorker - ERROR`);
+
     });
 });
 
