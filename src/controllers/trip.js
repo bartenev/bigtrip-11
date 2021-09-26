@@ -126,7 +126,7 @@ export default class TripController {
   setSortType(sortType) {
     this._sortType = sortType;
     this._sortComponent.setDefaultSortType();
-    this._updateEvents(this._sortType);
+    this.updateEvents(this._sortType);
   }
 
   _renderNoPointsElement() {
@@ -172,7 +172,7 @@ export default class TripController {
     this._daysListComponent.getElement().innerHTML = ``;
   }
 
-  _updateEvents(sortType) {
+  updateEvents(sortType = this._sortType) {
     this._removeEvents();
     this._renderEvents(this._eventsModel.getEvents(), sortType);
   }
@@ -182,14 +182,14 @@ export default class TripController {
       this._creatingTask = null;
       if (newData === null) {
         eventController.destroy();
-        this._updateEvents(this._sortType);
+        this.updateEvents(this._sortType);
       } else {
         this._api.createEvent(newData)
           .then((eventModel) => {
             this._eventsModel.addEvent(eventModel);
             // eventController.render(newData, EventControllerMode.DEFAULT);
             this._eventsControllers = [].concat(eventController, this._eventsControllers);
-            this._updateEvents(this._sortType);
+            this.updateEvents(this._sortType);
           })
           .catch(() => {
             eventController.shake();
@@ -199,7 +199,7 @@ export default class TripController {
       this._api.deleteEvent(oldData.id)
         .then(() => {
           this._eventsModel.removeEvent(oldData.id);
-          this._updateEvents(this._sortType);
+          this.updateEvents(this._sortType);
         })
         .catch(() => {
           eventController.shake();
@@ -212,7 +212,7 @@ export default class TripController {
           if (isSuccess) {
             eventController.render(eventModel, EventControllerMode.DEFAULT);
             if (isClose) {
-              this._updateEvents(this._sortType);
+              this.updateEvents(this._sortType);
             }
           }
         })
@@ -231,7 +231,7 @@ export default class TripController {
   }
 
   _onFilterChange() {
-    this._updateEvents(SortType.EVENT);
+    this.updateEvents(SortType.EVENT);
     this._sortComponent.setDefaultSortType();
   }
 }
