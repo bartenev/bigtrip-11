@@ -17,8 +17,9 @@ import TripController from "./controllers/trip";
 import TripComponent from "./components/trip";
 import {render, RenderPosition} from "./utils/render";
 import {SortType} from "./components/sort";
+import {FilterType} from "./const";
 
-const AUTHORIZATION = `Basic kjsfnfddsvngfsfdvn`;
+const AUTHORIZATION = `Basic kjsfnfdddsvngfsfdvn`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `bigtrip-localstorage`;
 const STORE_VER = `v1`;
@@ -39,7 +40,6 @@ const tripControlsElement = document.querySelector(`.trip-controls`);
 const tabsComponent = new TabsComponent();
 render(tripControlsElement, tabsComponent, RenderPosition.AFTERBEGIN);
 const filterController = new FilterController(tripControlsElement, eventsModel);
-filterController.render();
 
 const newEventButtonComponent = new NewEventButtonComponent();
 render(tripMainElement, newEventButtonComponent);
@@ -59,6 +59,7 @@ statisticsComponent.hide();
 
 newEventButtonComponent.setButtonClickHandler(() => {
   tabsComponent.setActiveItem(TabsItem.TABLE);
+  filterController.setActiveFilter(FilterType.EVERYTHING);
   statisticsComponent.hide();
   tripController.show();
   tripController.createTask();
@@ -95,6 +96,7 @@ apiWithProvider.getEvents()
             offersModel.setOffers(offers);
             render(tripInfoComponent.getElement(), new InfoMainComponent(eventsModel));
             render(tripInfoComponent.getElement(), new InfoCostComponent(eventsModel));
+            filterController.render();
             loadingComponent.getElement().remove();
             loadingComponent.removeElement();
             tripController.render();

@@ -118,7 +118,7 @@ export default class TripController {
     }
     this._onViewChange();
     this._sortType = SortType.EVENT;
-    this._eventsModel.setFilter(FilterType.EVERYTHING);
+    // this._eventsModel.setFilter(FilterType.EVERYTHING);
     this._creatingTask = new EventController(this._sortComponent.getElement(), this._destinationsModel, this._offersModel, this._onDataChange, this._onViewChange);
     this._creatingTask.render(EmptyEvent, EventControllerMode.ADDING);
   }
