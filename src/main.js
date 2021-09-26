@@ -111,4 +111,16 @@ apiWithProvider.getEvents()
 //     });
 // });
 
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  apiWithProvider.sync()
+    .then((events) => {
+      eventsModel.setEvents(events);
+      tripController.updateEvents();
+    });
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});
 

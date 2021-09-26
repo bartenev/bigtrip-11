@@ -13,6 +13,11 @@ const createStoreStructure = (items) => {
   }, {});
 };
 
+const getSyncedTasks = (items) => {
+  return items.filter(({success}) => success)
+    .map(({payload}) => payload.point);
+};
+
 export default class Provider {
   constructor(api, storage) {
     this._api = api;
@@ -103,5 +108,25 @@ export default class Provider {
 
     this._storage.removeItem(id, `events`);
     return Promise.resolve();
+  }
+
+  sync() {
+    if (isOnline()) {
+      const storeEvents = Object.values(this._storage.getItems().events);
+      return this._api.sync(storeEvents)
+        .then((response) => {
+          const createdEvents = response.created;
+          const updateEvents = getSyncedTasks(response.updated);
+          const allEvents = [...createdEvents, ...updateEvents];
+
+          const items = createStoreStructure(allEvents);
+
+          this._storage.setItems(`events`, items);
+
+          return Event.parseEvents(allEvents);
+        });
+    }
+
+    return Promise.reject(new Error(`Sync data failed`));
   }
 }
